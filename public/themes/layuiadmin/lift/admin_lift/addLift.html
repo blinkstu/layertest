@@ -1,0 +1,302 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+        height: 100%;
+    }
+
+    #container {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+</head>
+
+<body>
+    <form class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
+        <input type="hidden" name="worker_id">
+        <input type="hidden" name="contract_id" value="{$Request.param.contract_id}">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                分配给员工
+                <div class="layui-layout-right" style="margin-right:20px;">
+                    <a class="layui-btn layui-btn-xs layui-btn-warm re_choose">重新选择</a>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <p class='choosed hide'>已经选择员工：
+                    <b class='worker_name'>锤锤宝宝</b>
+                </p>
+                <ul class="worker-list">
+                    <volist name="staffs" id="vo">
+                        <li class="layui-anim layui-anim-scale" nickname="{$vo.user_nickname}" id="{$vo.id}" desc="{$vo.description}" userlogin="{$vo.user_login}"
+                            tel="{$vo.mobile}">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-nanxing"></use>
+                            </svg>
+                            <p class="name">
+                                <span class="layui-badge layui-bg-black">{$vo.user_nickname}</span>
+                            </p>
+                            <p>
+                                <span class="layui-badge layui-bg-black">任务量：{:count($vo.got_lifts)}</span>
+                            </p>
+                            <a class="layui-btn layui-btn-xs layui-btn-warm choose_worker" style="width: 100%;">选择</a>
+                        </li>
+                    </volist>
+                </ul>
+
+
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                保养期限
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">首次保养</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="next_date" class="layui-input" id="test-laydate-normal-cn" placeholder="yyyy-MM-dd" lay-key="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">保养间隔</label>
+                            <div class="layui-input-inline">
+                                <select name="gap" id="gap" lay-filter="gap" lay-verify="required">
+                                    <option value="0.5">半月</option>
+                                    <option value="1">月度</option>
+                                    <option value="3">季度</option>
+                                    <option value="6">半年度</option>
+                                    <option value="12">年度</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                基本信息
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电梯编号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_id" required lay-verify="required" placeholder="电梯编号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电梯型号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_model" required lay-verify="required" placeholder="电梯型号" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">使用单位</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_belongs" required lay-verify="required" placeholder="使用单位" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电梯备注</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_desc" required lay-verify="required" placeholder="备注" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                地理位置
+            </div>
+            <div class="layui-card-body">
+                <div id="myPageTop">
+                    <input id="tipinput" class="layui-input" placeholder="搜索" />
+                </div>
+                <div id="container"></div>
+                <div class="layui-form-item mt-2">
+                    <label class="layui-form-label">已选择</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="addLng" id="add_lng">
+                        <input type="hidden" name="addLat" id="add_lat">
+                        <input type="text" id="address_name" name="address_name" required lay-verify="required" placeholder="请输入标题" disabled autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+        </div>
+    </form>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.8&key=0b697e9fb088d67868b80518230aa345&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch"></script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'form', 'layer', 'laydate', 'upload', 'table'], function () {
+            var index = parent.layer.getFrameIndex(window.name);
+            //parent.parent.good('{$Request.param.fid}', index);
+            var d = new Date()
+            today = d.toLocaleDateString();
+            layui.laydate.render({
+                elem: '#test-laydate-normal-cn',
+                min: today,
+                done: function (value, date, endDate) {
+                    getDates(value);
+                }
+            });
+
+            layui.form.on('select(gap)', function (data) {
+                if ($('#test-laydate-normal-cn').val()) {
+                    getDates($('#test-laydate-normal-cn').val());
+                }
+            });
+
+            //监听提交
+            layui.form.on('submit(layuiadmin-app-form-submit)', function (data) {
+                var field = data.field; //获取提交的字段
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                if ($('.holding').length > 0) {
+                    layui.layer.msg('还有未上传的扫描件');
+                    return false;
+                }
+                $.ajax({
+                    url: "/lift/admin_lift/addLiftPost",
+                    type: "post",
+                    data: field,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            parent.parent.good("{$Request.param.fid}", index);
+                        } else {
+                            layui.layer.msg(data.msg);
+                        }
+
+                    }
+                });
+            });
+
+            $('.worker-list li').hover(function () {
+                data = '<p>用户名：' + $(this).attr('userlogin') + '<p><p>手机号码：' + $(this).attr('tel') + '</p><p>备注：' + $(this).attr('desc') + '</p>'
+                index = layer.tips(data, $(this));
+            })
+
+            $('.worker-list li').mouseleave(function () {
+                if (index) {
+                    layer.close(index);
+                }
+            })
+
+            $('.choose_worker').on('click', function () {
+                var li_dom = $(this).parent();
+                id = li_dom.attr('id');
+                nickname = li_dom.attr('nickname');
+                $('.worker_name').html(nickname);
+                $('.worker-list').hide("fast");
+                $('.choosed').show("fast");
+                $('.re_choose').show();
+                $("input[name='worker_id']").val(id);
+            })
+
+            $('.re_choose').on('click', function () {
+                $('.worker-list').show("fast");
+                $('.choosed').hide("fast");
+                $('.re_choose').hide();
+            })
+
+
+
+            function getDates(value) {
+            }
+
+            var marker, map = new AMap.Map('container');
+
+            var autoOptions = {
+                input: "tipinput"
+            };
+            var auto = new AMap.Autocomplete(autoOptions);
+            var placeSearch = new AMap.PlaceSearch({
+                map: map,
+                pageSize: 1
+            });  //构造地点查询类
+            AMap.event.addListener(auto, "select", select);//注册监听，当选中某条记录时会触发
+            function select(e) {
+                placeSearch.setCity(e.poi.adcode);
+                placeSearch.search(e.poi.name);  //关键字查询查询
+                e.SelectChangeEvent.marker.setMap(null);
+            }
+
+            var clickEventListener = map.on('click', function (e) {
+                var lng = e.lnglat.getLng();
+                var lat = e.lnglat.getLat();
+                if (marker) {
+                    marker.setMap(null)
+                }
+                addMarker(map, lng, lat);
+                var geocoder = new AMap.Geocoder({
+                    radius: 50,
+                    extensions: "all"
+                });
+                geocoder.getAddress([lng, lat], function (status, result) {
+                    if (status === 'complete' && result.info === 'OK') {
+                        address_name = result.regeocode.formattedAddress
+                        $('#address_name').val(address_name);
+                        $('#add_lng').val(lng);
+                        $('#add_lat').val(lat);
+                    }
+                });
+            });
+
+            function addMarker(map, lng, lat) {
+                marker = new AMap.Marker({
+                    icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png",
+                    position: [lng, lat]
+                });
+                marker.setMap(map);
+            }
+
+            function getDate(date, monthNum) {
+                var dateArr = date.split('-');
+                var year = dateArr[0]; //获取当前日期的年份
+                var month = dateArr[1]; //获取当前日期的月份
+                var day = dateArr[2]; //获取当前日期的日
+                var days = new Date(year, month, 0);
+                days = days.getDate(); //获取当前日期中的月的天数
+                var year2 = year;
+                var month2 = parseInt(month) + parseInt(monthNum);
+                if (month2 > 12) {
+                    year2 = parseInt(year2) + parseInt((parseInt(month2) / 12 == 0 ? 1 : parseInt(month2) / 12));
+                    month2 = parseInt(month2) % 12;
+                }
+                var day2 = day;
+                var days2 = new Date(year2, month2, 0);
+                days2 = days2.getDate();
+                if (day2 > days2) {
+                    day2 = days2;
+                }
+                if (month2 < 10) {
+                    month2 = '0' + month2;
+                }
+                var t2 = year2 + '-' + month2 + '-' + day2;
+                return t2;
+            }
+
+        });
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

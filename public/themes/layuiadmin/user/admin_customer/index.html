@@ -1,0 +1,130 @@
+<include file="public@header" />
+<hook name="admin_before_head_end" />
+
+</head>
+
+<body style='background: #f2f2f2'>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header layuiadmin-card-header-auto">
+                <button class="layui-btn layuiadmin-btn-list" data-type="add">添加客户</button>
+            </div>
+            <div class="layui-card-body">
+                <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
+            </div>
+        </div>
+    </div>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js?t=1"></script>
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        {{#  if(d.auth > 2){ }}
+          <a class="layui-btn layui-btn-xs" lay-event="check">审核</a>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="statusTpl">
+        {{#  if(d.user_status == 1){ }}
+        <i class="layui-icon layui-icon-ok" style="color: #1E9FFF;">正常</i>
+        {{#  } else { }}
+            <i class="layui-icon layui-icon-close" style="color: #FF5722;">禁用</i>
+        {{#  } }}
+    </script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'table', 'layer'], function () {
+            var table = layui.table;
+            table.render({
+                elem: '#LAY-app-content-list'
+                , height: 450
+                , url: '/user/admin_customer/staffFetchData' //数据接口
+                , page: true //开启分页
+                , cols: [[ //表头
+                    { field: 'id', title: '客户ID', sort: true, fixed: 'left', width: 80 }
+                    , { field: 'user_login', title: '用户名' }
+                    , { field: 'user_nickname', title: '姓名' }
+                    , { field: 'mobile', title: '手机号' }
+                    , { field: 'name', title: '职位' }
+                    , { field: 'description', title: '备注' }
+                    , { field: 'user_status', title: '状态', templet: '#statusTpl' }
+                    , { fixed: 'right', title: '操作', width: 150, align: 'center', toolbar: '#toolbar' }
+                ]]
+            });
+            table.on('tool(LAY-app-content-list)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                if (layEvent === 'edit') {
+                    layer.open({
+                        type: 2
+                        , title: '编辑客户'
+                        , content: '/user/admin_customer/editStaff.html?id=' + data.id
+                        , maxmin: false
+                        , area: ['350px', '550px']
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                } else if (layEvent === 'del') {
+                    layer.confirm('确定要删除' + data.user_nickname + '吗？', {
+                        btn: ['确定', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                url: "/user/admin_customer/delStaffPost",
+                                type: "post",
+                                data: { id: data.id },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layui.layer.msg(data.msg);
+                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    } else {
+                                        layui.layer.msg(data.msg);
+                                    }
+
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            var $ = layui.$, active = {
+                add: function () {
+                    layer.open({
+                        type: 2
+                        , title: '添加客户'
+                        , content: '/user/admin_customer/addStaff.html'
+                        , maxmin: false
+                        , area: ['350px', '550px']
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                },
+                edit: function (el) {
+                    alert(el.attr('data-id'));
+                }
+            };
+
+            $('.layui-btn.layuiadmin-btn-list').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+        });
+
+
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

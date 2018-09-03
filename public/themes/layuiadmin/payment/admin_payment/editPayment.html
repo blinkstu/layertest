@@ -1,0 +1,312 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+    }
+</style>
+</head>
+
+<body>
+    <form class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                基本信息
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">收款类型</label>
+                            <div class="layui-input-inline">
+                                <select name="paymentType" lay-verify="required">
+                                    <option value="普通" {$payment.paymentType=='普通' ? 'selected': ''}>普通</option>
+                                    <option value="月度" {$payment.paymentType=='月度' ? 'selected': ''}>月度</option>
+                                    <option value="季度" {$payment.paymentType=='季度' ? 'selected': ''}>季度</option>
+                                    <option value="半年度" {$payment.paymentType=='半年度' ? 'selected': ''}>半年度</option>
+                                    <option value="年度" {$payment.paymentType=='年度' ? 'selected': ''}>年度</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="hidden" name="id" value="{$payment.id}">
+                        <input type="hidden" name="contractId" value="{$Request.param.contract_id}">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">付款方</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="payer" required lay-verify="required" placeholder="请输付款方" value="{$payment.payer}" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">收款方</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="payee" required lay-verify="required" placeholder="请输收款方" value="{$payment.payee}" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">收款日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="payTime" class="layui-input" id="test-laydate-normal-cn" value="{$payment.payTime}" placeholder="yyyy-MM-dd"
+                                    lay-key="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">票据类型</label>
+                            <div class="layui-input-inline">
+                                <select name="billType" lay-verify="required">
+                                    <option value=""></option>
+                                    <option value="发票" {$payment.billType=='发票' ? 'selected': ''}>发票</option>
+                                    <option value="普通发票" {$payment.billType=='普通发票' ? 'selected': ''}>普通发票</option>
+                                    <option value="增值税发票" {$payment.billType=='增值税发票' ? 'selected': ''}>增值税发票</option>
+                                    <option value="专用发票" {$payment.billType=='专用发票' ? 'selected': ''}>专用发票</option>
+                                    <option value="普通专用发票" {$payment.billType=='普通专用发票' ? 'selected': ''}>普通专用发票</option>
+                                    <option value="收据" {$payment.billType=='收据' ? 'selected': ''}>收据</option>
+                                    <option value="其它" {$payment.billType=='其它' ? 'selected': ''}>其它</option>
+                                    <option value="已收款未开票" {$payment.billType=='已收款未开票' ? 'selected': ''}>已收款未开票</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label text-red">总金额</label>
+                            <div class="layui-input-inline">
+                                <input type="float" name="totalAmount" id="total-amount" required lay-verify="required" value="{$payment.totalAmount}" placeholder="总金额"
+                                    autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">税率</label>
+                            <div class="layui-input-inline">
+                                <input type="number" id="tax" name="taxRate" style="width:60px;float:left;" value="{$payment.taxRate}" required lay-verify="required"
+                                    placeholder="%" autocomplete="off" class="layui-input">
+                                <span style="line-height: 40px;">&nbsp;&nbsp; 税款:
+                                    <b class="tax-amount">{$payment.taxAmount}</b>
+                                    <input type="hidden" id='taxAmount' value="{$payment.taxAmount}" name='taxAmount'>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label text-red">开票内容</label>
+                        <div class="layui-input-block">
+                            <textarea name="paymentContent" style="width:545px;" placeholder="请输入内容" class="layui-textarea">{$payment.paymentContent}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">收款备注</label>
+                        <div class="layui-input-block">
+                            <textarea name="paymentNote" style="width:545px;" placeholder="请输入内容" class="layui-textarea">{$payment.paymentNote}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card">
+            <div class="layui-card-header">扫描件</div>
+            <div class="layui-card-body">
+                <div class="layui-upload">
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="test-upload-testList">选择扫描件</button>
+                    <button type="button" class="layui-btn layui-btn-sm" id="test-upload-testListAction">开始上传</button>
+                    <input class="layui-upload-file" type="file" accept="undefined" name="file" multiple="">
+                    <div class="layui-upload-list">
+                        <table class="layui-table" id='demo' lay-size="sm" lay-filter="demo">
+                            <thead>
+                                <tr>
+                                    <th style="width:80px;">文件名</th>
+                                    <th>备注</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="test-upload-demoList">
+                                <foreach name="photos" item="item" key="key">
+                                    <tr id="upload-{$key}">
+                                        <td>
+                                            <div id="photo{$key}" class="img-wapper">
+                                                <img layer-src="/upload/{$item['url']}" src="/upload/{$item['url']}" layer-index="0">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type 'text'="" name="photos[{$key}][description]" value="{$item['description']}" placeholder="备注信息" class="layui-input">
+                                        </td>
+                                        <td>
+                                            <span style="color: #5FB878;">上传成功</span>
+                                        </td>
+                                        <td>
+                                            <button class="layui-btn layui-btn-xs layui-btn-danger test-upload-demo-delete2">删除</button>
+                                        </td>
+                                        <input type="hidden" name="photos[{$key}][url]" class="img-input" value="{$item['url']}">
+                                    </tr>
+                                </foreach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+        </div>
+    </form>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'form', 'layer', 'laydate', 'upload', 'table'], function () {
+            $("#tax,#total-amount").blur(function () {
+                taxRate = $('#tax').val();
+                amount = $('#total-amount').val();
+                amount = amount.replace(/[&\|\\\,*^%$#@\-]/g, '');
+                taxAmount = amount * taxRate * 0.01;
+                taxAmount = taxAmount.toFixed(2);
+                $('.tax-amount').html(taxAmount);
+                $('#taxAmount').val(taxAmount);
+                $('#total-amount').val(formatCurrency(amount));
+            });
+            $('#total-amount').val(formatCurrency($('#total-amount').val()));
+            $('.test-upload-demo-delete2').on('click', function () {
+                $(this).parent().parent().remove();
+            });
+            layui.laydate.render({
+                elem: '#test-laydate-normal-cn'
+            });
+
+            layui.form.on('submit(layuiadmin-app-form-submit)', function (data) {
+                var field = data.field; //获取提交的字段
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                if ($('.holding').length > 0) {
+                    layui.layer.msg('还有未上传的扫描件');
+                    return false;
+                }
+                $.ajax({
+                    url: "/payment/admin_payment/editPaymentPost",
+                    type: "post",
+                    data: field,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            parent.parent.good('{$Request.param.fid}', index);
+                        } else {
+                            layui.layer.msg(data.msg);
+                        }
+
+                    }
+                });
+
+            });
+
+            var demoListView = $('#test-upload-demoList');
+            uploadListIns = layui.upload.render({
+                elem: '#test-upload-testList'
+                , url: '/user/asset/webuploader'
+                , accept: 'file'
+                , multiple: true
+                , auto: false
+                , bindAction: '#test-upload-testListAction'
+                , before: function (obj) {
+                    //layer.load();
+                }, choose: function (obj) {
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    //读取本地文件
+                    var i = "{$photos_num}";
+                    obj.preview(function (index, file, result) {
+                        var tr = $(['<tr id="upload-' + index + '">'
+                            , '<td><div id="photo' + index + '" class="img-wapper"><img layer-src="' + result + '" src="' + result + '" /></div></td>'
+                            , "<td><input type'text' name='photos[" + i + "][description]' placeholder='备注信息' class='layui-input'></td>"
+                            , '<td><span class="holding">等待上传</span></td>'
+                            , '<td>'
+                            , '<button class="layui-btn layui-btn-xs test-upload-demo-reload layui-hide">重传</button>'
+                            , '<button class="layui-btn layui-btn-xs layui-btn-danger test-upload-demo-delete">删除</button>'
+                            , '</td>'
+                            , "<input type='hidden' name='photos[" + i + "][url]' class='img-input'>"
+                            , '</tr>'].join(''));
+                        i += 1;
+                        //单个重传
+                        tr.find('.test-upload-demo-reload').on('click', function () {
+                            obj.upload(index, file);
+                        });
+
+                        //删除
+                        tr.find('.test-upload-demo-delete').on('click', function () {
+                            delete files[index]; //删除对应的文件
+                            tr.remove();
+                            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        });
+                        demoListView.append(tr);
+                        layui.layer.photos({
+                            photos: '#photo' + index
+                            , anim: 5
+                        });
+                    });
+                }
+                , done: function (res, index, upload) {
+                    if (res.code == 1) { //上传成功
+                        var tr = demoListView.find('tr#upload-' + index)
+                            , tds = tr.children();
+                        tds.eq(0).html('<div id="photo' + index + '" class="img-wapper"><img layer-src="' + res.data.preview_url + '" src="' + res.data.preview_url + '" /></div>');
+                        tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                        //tds.eq(3).html(''); //清空操作
+                        layui.layer.photos({
+                            photos: '#photo' + index
+                            , anim: 5
+                        });
+                        tr.children('.img-input').val(res.data.filepath);
+                        return delete this.files[index]; //删除文件队列已经上传成功的文件
+                    }
+
+                    this.error(res, index, upload);
+                }
+                , allDone: function () {
+                    //layer.closeAll('loading');
+                }
+                , error: function (res, index, upload) {
+                    //layer.closeAll('loading');
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color: #FF5722;">' + res.msg + '</span>');
+                    tds.eq(3).find('.test-upload-demo-reload').removeClass('layui-hide'); //显示重传
+                }
+            });
+
+            $('.img-wapper').each(function () {
+                id = $(this).attr('id');
+                layui.layer.photos({
+                    photos: '#' + id
+                    , anim: 5
+                });
+            });
+
+
+            function formatCurrency(num) {
+                var num = num.toString().replace(/\$|\,/g, '');
+                if (isNaN(num))
+                    num = "0";
+                var sign = (num == (num = Math.abs(num)));
+                num = Math.floor(num * 100 + 0.50000000001);
+                cents = num % 100;
+                num = Math.floor(num / 100).toString();
+                if (cents < 10)
+                    cents = "0" + cents;
+                for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+                    num = num.substring(0, num.length - (4 * i + 3)) + ',' +
+                        num.substring(num.length - (4 * i + 3));
+                return (((sign) ? '' : '-') + num + '.' + cents);
+            }
+
+        });
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

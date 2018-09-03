@@ -1,0 +1,417 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+        height: 100%;
+    }
+</style>
+</head>
+
+<body>
+    <div class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                基本信息
+            </div>
+            <div class="layui-card-body">
+                <div class="lay-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="contract_id" required="" lay-verify="required" placeholder="编号" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="contract_name" required="" lay-verify="required" placeholder="名称" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">总金额</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="total_amount" id="total-amount" required="" lay-verify="required" placeholder="￥" autocomplete="off"
+                                    class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">开始时间</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" name="start_date" id="test-laydate-normal-cn" placeholder="yyyy-MM-dd" lay-key="1">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">到期时间</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" name="end_date" id="test-laydate-normal-cn2" placeholder="yyyy-MM-dd" lay-key="2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">合同类型</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="type" value="1" title="半包">
+                                <div class="layui-unselect layui-form-radio">
+                                    <i class="layui-anim layui-icon"></i>
+                                    <div>半包</div>
+                                </div>
+                                <input type="radio" name="type" value="2" title="全包" checked="">
+                                <div class="layui-unselect layui-form-radio layui-form-radioed">
+                                    <i class="layui-anim layui-icon layui-anim-scaleSpring"></i>
+                                    <div>全包</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">合同状态</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="status" lay-skin="switch" lay-text="正常|失效" lay-filter="switchTest" value="1" checked>
+                                <div class="layui-unselect layui-form-switch" lay-skin="_switch">
+                                    <em>失效</em>
+                                    <i></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-col-xs9">
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">备注信息</label>
+                            <div class="layui-input-block">
+                                <textarea name="notes" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                甲方乙方
+            </div>
+            <div class="layui-card-body">
+                    <div class="layui-row">
+                            <div class="layui-col-xs6">
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">甲方</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="a_name">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">地址</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="a_address">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">甲方代表</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="a_represent">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">电话</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="a_tel">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-col-xs6">
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">乙方</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="b_name">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">地址</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="b_address">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">乙方代表</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="b_represent">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label for="" class="layui-form-label">电话</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" class='layui-input' name="b_tel">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="mid-block">
+                            <div class="customer-selected hide">
+                                <div class="layui-row">
+                                    <input type="hidden" name="customer_id" id="customer_id" required="" placeholder="编号" autocomplete="off" class="layui-input">
+                                    <p>当前已经选择客户账号
+                                        <b class="customer  text-red"></b>
+                                        <a class="layui-btn layuiadmin-btn-list layui-btn-xs" data-type="rechoose">重新选择</a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="customer-table">
+                                <div class="layui-row">
+                                    <button class="layui-btn layuiadmin-btn-list layui-btn-xs" data-type="add">添加客户</button>
+                                </div>
+                                <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
+                            </div>
+                        </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                扫描件
+            </div>
+            <div class="layui-card-body">
+                    <div class="layui-upload">
+                            <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="test-upload-testList">选择扫描件</button>
+                            <button type="button" class="layui-btn layui-btn-sm" id="test-upload-testListAction">开始上传</button>
+                            <input class="layui-upload-file" type="file" accept="undefined" name="file" multiple="">
+                            <div class="layui-upload-list">
+                                <table class="layui-table" id='demo' lay-size="sm" lay-filter="demo">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:80px;">文件名</th>
+                                            <th>备注</th>
+                                            <th>状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="test-upload-demoList">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+            </div>
+        </div>
+
+
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+        </div>
+    </div>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="choose">选择</a>
+    </script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'form', 'layer', 'laydate', 'upload', 'table'], function () {
+            var $ = layui.$, form = layui.form, table = layui.table, laydate = layui.laydate;
+            laydate.render({
+                elem: '#test-laydate-normal-cn'
+            });
+            laydate.render({
+                elem: '#test-laydate-normal-cn2'
+            });
+            $("#total-amount").blur(function () {
+                amount = $('#total-amount').val();
+                amount = amount.replace(/[&\|\\\,*^%$#@\-]/g, '');
+                $('#total-amount').val(formatCurrency(amount));
+            });
+
+            layui.table.render({
+                elem: '#LAY-app-content-list'
+                , height: 300
+                , url: '/user/admin_customer/staffFetchData' //数据接口
+                , page: true //开启分页
+                , cols: [[ //表头
+                    { field: 'id', title: '客户ID', sort: true, fixed: 'left', width: 60 }
+                    , { field: 'user_login', title: '用户名' }
+                    , { field: 'user_nickname', title: '姓名' }
+                    , { field: 'mobile', title: '手机号' }
+                    , { field: 'description', title: '备注' }
+                    , { fixed: 'right', title: '操作', align: 'center', toolbar: '#toolbar' }
+                ]]
+            });
+            layui.table.on('tool(LAY-app-content-list)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'choose') {
+                    $('.customer').html(data.user_login);
+                    $('#customer_id').val(data.id);
+                    $('.customer-selected').show();
+                    $('.customer-table').hide();
+                    $("[name='a_name']").val(data.user_nickname)
+                    $("[name='a_represent']").val(data.user_nickname)
+                    $("[name='a_tel']").val(data.mobile)
+                    layer.msg('已选择')
+                }
+            });
+
+            var $ = layui.$, active = {
+                add: function () {
+                    layer.open({
+                        type: 2
+                        , title: '添加客户'
+                        , content: '/user/admin_customer/addStaff.html'
+                        , maxmin: false
+                        , area: ['350px', '550px']
+                        , btn: ['确定', '取消']
+                        , yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                },
+                rechoose: function () {
+                    $('#customer_id').val('');
+                    $('.customer-selected').hide();
+                    $('.customer-table').show();
+                }
+            };
+
+            $('.layui-btn.layuiadmin-btn-list').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+            //监听提交
+            form.on('submit(layuiadmin-app-form-submit)', function (data) {
+                var field = data.field; //获取提交的字段
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                if ($('.holding').length > 0) {
+                    layui.layer.msg('还有未上传的扫描件');
+                    return false;
+                }
+                $.ajax({
+                    url: "/contract/admin_contract/addContractPost",
+                    type: "post",
+                    data: field,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            parent.parent.good("{$Request.param.fid}");
+                        } else {
+                            layui.layer.msg(data.msg);
+                        }
+
+                    }
+                });
+
+            });
+
+            $('.test-upload-demo-delete2').on('click', function () {
+                $(this).parent().parent().remove();
+            });
+
+            var demoListView = $('#test-upload-demoList');
+            uploadListIns = layui.upload.render({
+                elem: '#test-upload-testList'
+                , url: '/user/asset/webuploader'
+                , accept: 'file'
+                , multiple: true
+                , auto: false
+                , bindAction: '#test-upload-testListAction'
+                , before: function (obj) {
+                    //layer.load();
+                }, choose: function (obj) {
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    //读取本地文件
+                    var i = 0
+                    obj.preview(function (index, file, result) {
+                        var tr = $(['<tr id="upload-' + index + '">'
+                            , '<td><div id="photo' + index + '" class="img-wapper"><img layer-src="' + result + '" src="' + result + '" /></div></td>'
+                            , "<td><input type'text' name='photos[" + i + "][description]' placeholder='备注信息' class='layui-input'></td>"
+                            , '<td><span class="holding">等待上传</span></td>'
+                            , '<td>'
+                            , '<button class="layui-btn layui-btn-xs test-upload-demo-reload layui-hide">重传</button>'
+                            , '<button class="layui-btn layui-btn-xs layui-btn-danger test-upload-demo-delete">删除</button>'
+                            , '</td>'
+                            , "<input type='hidden' name='photos[" + i + "][url]' class='img-input'>"
+                            , '</tr>'].join(''));
+                        i += 1;
+                        //单个重传
+                        tr.find('.test-upload-demo-reload').on('click', function () {
+                            obj.upload(index, file);
+                        });
+
+                        //删除
+                        tr.find('.test-upload-demo-delete').on('click', function () {
+                            delete files[index]; //删除对应的文件
+                            tr.remove();
+                            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        });
+                        demoListView.append(tr);
+                        layui.layer.photos({
+                            photos: '#photo' + index
+                            , anim: 5
+                        });
+                    });
+                }
+                , done: function (res, index, upload) {
+                    if (res.code == 1) { //上传成功
+                        var tr = demoListView.find('tr#upload-' + index)
+                            , tds = tr.children();
+                        tds.eq(0).html('<div id="photo' + index + '" class="img-wapper"><img layer-src="' + res.data.preview_url + '" src="' + res.data.preview_url + '" /></div>');
+                        tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                        //tds.eq(3).html(''); //清空操作
+                        layui.layer.photos({
+                            photos: '#photo' + index
+                            , anim: 5
+                        });
+                        tr.children('.img-input').val(res.data.filepath);
+                        return delete this.files[index]; //删除文件队列已经上传成功的文件
+                    }
+
+                    this.error(res, index, upload);
+                }
+                , allDone: function () {
+                    //layer.closeAll('loading');
+                }
+                , error: function (res, index, upload) {
+                    //layer.closeAll('loading');
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color: #FF5722;">' + res.msg + '</span>');
+                    tds.eq(3).find('.test-upload-demo-reload').removeClass('layui-hide'); //显示重传
+                }
+            });
+
+            function formatCurrency(num) {
+                var num = num.toString().replace(/\$|\,/g, '');
+                if (isNaN(num))
+                    num = "0";
+                var sign = (num == (num = Math.abs(num)));
+                num = Math.floor(num * 100 + 0.50000000001);
+                cents = num % 100;
+                num = Math.floor(num / 100).toString();
+                if (cents < 10)
+                    cents = "0" + cents;
+                for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+                    num = num.substring(0, num.length - (4 * i + 3)) + ',' +
+                        num.substring(num.length - (4 * i + 3));
+                return (((sign) ? '' : '-') + num + '.' + cents);
+            }
+
+        })
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

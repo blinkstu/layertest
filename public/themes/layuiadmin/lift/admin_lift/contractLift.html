@@ -1,0 +1,139 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+        height: 100%;
+    }
+
+    body {
+        height: 100%;
+    }
+</style>
+</head>
+
+<body>
+    <div class="main-page">
+        <include file="public@side-nav" />
+        <div class="main-body">
+            <div class="layui-card my-2">
+                <div class="layui-card-header layuiadmin-card-header-auto" style="padding:20px">
+                    <button class="layui-btn layuiadmin-btn-list" data-type="addPayment">
+                        <i class="layui-icon layui-icon-add-1"></i>添加电梯</button>
+                </div>
+                <div class="layui-card-body">
+                    <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script type="text/html" id="gap">
+        {{# if(d.gap === '0.5'){ }}
+            半月
+        {{# } else if(d.gap === '1.0'){ }}
+            月度
+        {{# } else if(d.gap === '3.0'){ }}
+            季度
+        {{# } else if(d.gap === '6.0'){ }}
+            半年度
+        {{# } else if(d.gap === '12.0'){ }}
+            年度
+        {{# } }}
+    </script>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index'
+        }).use(['index', 'table', 'layer'], function () {
+            var fid = self.frameElement.getAttribute('__idm_frm__');
+            var $ = layui.$, active = {
+                addPayment: function () {
+                    parent.layer.open({
+                        type: 2
+                        , title: '添加电梯'
+                        , content: '/lift/admin_lift/addLift.html?fid=' + fid + '&contract_id={$contract.id}'
+                        , maxmin: false
+                        , area: ['750px', '95%']
+                        , btn: ['添加', '取消']
+                        , yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                }
+            };
+
+            $('.layui-btn.layuiadmin-btn-list').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+            layui.table.render({
+                elem: '#LAY-app-content-list'
+                , height: 400
+                , url: '/lift/admin_lift/contractLiftFetchData?contract_id=' + '{$Request.param.contract_id}' //数据接口
+                , page: true //开启分页
+                , size: 'sm' //小尺寸的表格
+                , cols: [[ //表头
+                    { field: 'lift_id', title: '电梯编号', sort: true, fixed: 'left', width: 100, event: 'edit' }
+                    , { field: 'lift_model', title: '电梯型号', event: 'edit' }
+                    , { field: 'user_nickname', title: '分配员工', event: 'edit' }
+                    , { field: 'next_date', sort: true, title: '下次保养日期', event: 'edit' }
+                    , { field: 'gap', title: '保养间隔', templet: '#gap', event: 'edit' }
+                    , { field: 'create_time', title: '创建时间', event: 'edit' }
+                    , { title: '操作', toolbar: '#toolbar' }
+                ]]
+            });
+
+            layui.table.on('tool(LAY-app-content-list)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'edit') {
+                    parent.layer.open({
+                        type: 2
+                        , title: '编辑电梯'
+                        , content: '/lift/admin_lift/editLift.html?id=' + data.id + '&fid=' + fid + '&contract_id={$contract.id}'
+                        , maxmin: false
+                        , area: ['750px', '95%']
+                        , btn: ['保存', '取消']
+                        , yes: function (index, layero) {
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                } else if (layEvent === 'del') {
+                    layer.confirm('确定要删除 ' + data.lift_id + ' 吗？', {
+                        btn: ['确定', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                url: "/lift/admin_lift/delLiftPost?id=" + data.id,
+                                type: "post",
+                                data: { id: data.id },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layui.layer.msg(data.msg);
+                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    } else {
+                                        layui.layer.msg(data.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+        })
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

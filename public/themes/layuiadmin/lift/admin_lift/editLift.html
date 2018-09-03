@@ -1,0 +1,543 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+        height: 100%;
+    }
+
+    #container {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+</head>
+
+<body>
+    <form class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
+        <input type="hidden" name="id" value="{$lift.id}">
+        <input type="hidden" name="worker_id" value="{$lift.worker_id}">
+        <input type="hidden" name="contract_id" value="{$Request.param.contract_id}">
+        <div class="layui-card">
+            <div class="layui-card-header">任务记录
+                <div class="layui-layout-right" style="margin-right:20px;">
+                    <a class="layui-btn layui-btn-xs layui-btn-normal add_repair">添加紧急维修任务</a>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <table id="LAY-app-content-list" class="layui-anim layui-anim-up" lay-filter="LAY-app-content-list"></table>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                分配给员工
+                <div class="layui-layout-right" style="margin-right:20px;">
+                    <a class="layui-btn layui-btn-xs layui-btn-normal re_choose">重新选择</a>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <p class='choosed'>已经选择员工：
+                    <b class='worker_name'>{$lift.user_nickname}</b>
+                </p>
+                <ul class="worker-list" style="display: none;">
+                    <volist name="staffs" id="vo">
+                        <li class="layui-anim layui-anim-scale" nickname="{$vo.user_nickname}" id="{$vo.id}" desc="{$vo.description}" userlogin="{$vo.user_login}"
+                            tel="{$vo.mobile}">
+                            <svg class="icon" aria-hidden="true">
+                                <use xlink:href="#icon-nanxing"></use>
+                            </svg>
+                            <p class="name">
+                                <span class="layui-badge layui-bg-black">{$vo.user_nickname}</span>
+                            </p>
+                            <p>
+                                <span class="layui-badge layui-bg-black">任务量：{:count($vo.got_lifts)}</span>
+                            </p>
+                            <a class="layui-btn layui-btn-xs layui-btn-normal choose_worker" style="width: 100%;">选择</a>
+                        </li>
+                    </volist>
+                </ul>
+
+
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                保养期限
+                <div class="layui-layout-right" style="margin-right:20px;">
+                    <a class="layui-btn layui-btn-xs layui-btn-danger unlock">解锁</a>
+                    <notempty name="edit_log">
+                        <a class="layui-btn layui-btn-xs layui-btn-normal show_log">显示修改记录</a>
+                    </notempty>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="color-card layui-bg-gray">
+                        下次保养时间由系统控制，请谨慎修改。
+                    </div>
+                </div>
+                <div class="layui-row">
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">下次保养</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="next_date" disabled=true value="{$lift.next_date}" class="layui-input" id="test-laydate-normal-cn"
+                                    placeholder="yyyy-MM-dd" lay-key="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">保养间隔</label>
+                            <div class="layui-input-inline">
+                                <select name="gap" id="gap" lay-filter="gap" disabled=true lay-verify="required">
+                                    <option value="0.5" {$lift.gap=='0.5' ? 'selected': ''}>半月
+
+                                    </option>
+                                    <option value="1" {$lift.gap=='1' ? 'selected': ''}>月度</option>
+                                    <option value="3" {$lift.gap=='3' ? 'selected': ''}>季度</option>
+                                    <option value="6" {$lift.gap=='6' ? 'selected': ''}>半年度</option>
+                                    <option value="12" {$lift.gap=='12' ? 'selected': ''}>年度</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <notempty name="edit_log">
+                    <table class="layui-table edit-log" style="display:none" lay-even lay-skin="line" lay-size="sm">
+                        <colgroup>
+                            <col width="150">
+                            <col width="200">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>时间</th>
+                                <th>内容</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="edit_log" item="vo">
+                                <tr>
+                                    <td>{$vo.date}</td>
+                                    <td>{$vo.log}</td>
+                                </tr>
+                            </foreach>
+
+                        </tbody>
+                    </table>
+                </notempty>
+
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                基本信息
+            </div>
+            <div class="layui-card-body">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电梯编号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_id" value="{$lift.lift_id}" required lay-verify="required" placeholder="电梯编号" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电梯型号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_model" value="{$lift.lift_model}" required lay-verify="required" placeholder="电梯型号" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">使用单位</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_belongs" value="{$lift.lift_belongs}" required lay-verify="required" placeholder="使用单位" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电梯备注</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="lift_desc" value="{$lift.lift_desc}" required lay-verify="required" placeholder="备注" autocomplete="off"
+                            class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">
+                地理位置
+                <div class="layui-layout-right" style="margin-right:20px;">
+                    <a class="layui-btn layui-btn-xs layui-btn-normal rechoose">重新选择</a>
+                </div>
+            </div>
+            <div class="layui-card-body">
+                <div id="myPageTop">
+                    <input id="tipinput" class="layui-input" placeholder="搜索" />
+                </div>
+                <div id="container"></div>
+                <div class="layui-form-item mt-2">
+                    <label class="layui-form-label">已选择</label>
+                    <div class="layui-input-inline" style="width:60%">
+                        <input type="hidden" name="addLng" value="{$lift.map_lng}" id="add_lng">
+                        <input type="hidden" name="addLat" value="{$lift.map_lat}" id="add_lat">
+                        <input type="text" class="layui-input" value="{$lift.map_address}" id="address_name" name="address_name" required lay-verify="required"
+                            placeholder="请输入标题" disabled autocomplete="off">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-hide">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+        </div>
+    </form>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.8&key=0b697e9fb088d67868b80518230aa345&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch"></script>
+    <script type="text/html" id="toolbar">
+        {{#  if(type != 2 && d.status != 2){ }}
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">详情</a>
+        {{#  } }}
+
+    </script>
+    <script type="text/html" id="status">
+        <!---a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="managePayment">管理</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a-->
+        {{# 
+        function status(status){
+            status = parseInt(status);
+            switch(status){
+                case 1:
+                    return '<span class="layui-badge layui-bg-green">已完成</span>';
+                    break;
+                case 2:
+                    return '<span class="layui-badge layui-bg-blue">下次维保</span>';
+                    break;
+                case 3:
+                    return '<span class="layui-badge layui-bg-danger">超时未完成</span>';
+                    break;
+                case 4:
+                    return '<span class="layui-badge layui-bg-blue">待完成任务</span>';
+                default:
+                    return '错误'
+            }
+        }
+        }}
+        {{ status(d.status) }}
+    </script>
+    <script type="text/html" id="type">
+        {{# 
+            function type(type){
+                type = parseInt(type);
+                switch(type){
+                    case 1:
+                        return '<span class="layui-badge layui-bg-gray">维保 </span>';
+                        break;
+                    case 2:
+                        return '<span class="layui-badge layui-bg-gray">紧急维修</span>';
+                        break;
+                    default:
+                        return '呵呵'
+                }
+            }
+            }}
+            {{ type(d.type) }}
+    </script>
+    <script type="text/html" id="work_time" >
+        {{# 
+        var current_time = new Date().getTime();
+        var work_time = new Date(d.work_time);
+        work_time.getTime();
+        if(work_time > current_time){ }}
+        <span style="color:#333">{{d.work_time}}</span>
+        {{#  } else { }}
+        <span style="color:#999">{{d.work_time}}</span>
+        {{# } }}
+    </script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'form', 'layer', 'laydate', 'upload', 'table'], function () {
+            var table = layui.table;
+            var index = parent.layer.getFrameIndex(window.name);
+            var fid = self.frameElement.getAttribute('__idm_frm__');
+
+            table.render({
+                elem: '#LAY-app-content-list'
+                , height: 300
+                , url: '/lift/admin_lift/liftWorkLogFetch?lift_id={$lift.id}' //数据接口
+                , page: true //开启分页
+                , initSort: {
+                    field: 'work_time'
+                    , type: 'desc'
+                }
+                , cols: [[ //表头
+                    { field: 'user_nickname', title: '员工姓名', width: 140 }
+                    , { field: 'type', title: '类型', templet: '#type' }
+                    , { field: 'work_time', title: '日期', templet: '#work_time' ,width: 110, sort: true }
+                    , { field: 'note', title: '备注', width:110 }
+                    , { field: 'status', title: '状态', templet: '#status' }
+                    , { title: '操作', toolbar: '#toolbar',width: 80 }
+                ]]
+            });
+
+            var d = new Date()
+            today = d.toLocaleDateString();
+            layui.laydate.render({
+                elem: '#test-laydate-normal-cn',
+                min: today,
+                done: function (value, date, endDate) {
+                    getDates(value);
+                }
+            });
+
+            layui.form.on('select(gap)', function (data) {
+                if ($('#test-laydate-normal-cn').val()) {
+                    getDates($('#test-laydate-normal-cn').val());
+                }
+            });
+
+            //监听提交
+            layui.form.on('submit(layuiadmin-app-form-submit)', function (data) {
+                var field = data.field; //获取提交的字段
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                if ($('.holding').length > 0) {
+                    layui.layer.msg('还有未上传的扫描件');
+                    return false;
+                }
+                $.ajax({
+                    url: "/lift/admin_lift/editLiftPost",
+                    type: "post",
+                    data: field,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            parent.parent.good("{$Request.param.fid}", index);
+                        } else {
+                            layui.layer.msg(data.msg);
+                        }
+
+                    }
+                });
+            });
+
+            //监听Toolbar
+            layui.table.on('tool(LAY-app-content-list)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'del') {
+                    layer.confirm('确定要删除 ' + data.user_nickname + ' 的紧急任务吗？', {
+                        btn: ['确定', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                url: "/lift/admin_lift/delWorkPost?id=" + data.id,
+                                type: "post",
+                                data: { id: data.id },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layui.layer.msg(data.msg);
+                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    } else {
+                                        layui.layer.msg(data.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else if(layEvent == 'done') {
+                    layer.confirm('确定要修改 ' + data.user_nickname + ' 的任务为已完成吗？', {
+                        btn: ['确定', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                url: "/lift/admin_lift/liftWorkDonePost?id=" + data.id,
+                                type: "post",
+                                data: { id: data.id },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layui.layer.msg(data.msg);
+                                        obj.reload(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    } else {
+                                        layui.layer.msg(data.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else if (layEvent == 'edit'){
+                    parent.layer.open({
+                    type: 2
+                    , title: '任务详情'
+                    , content: '/lift/admin_lift/liftWorkEdit.html?lift_id={$lift.id}' + '&fid=' + fid
+                    , maxmin: false
+                    , area: ['500px', '500px']
+                    , btn: false
+                    , cancel: function (index, layero) {
+                            layui.table.reload('LAY-app-content-list');
+                        }
+                });
+                }
+            });
+            
+
+            $('.show_log').on('click', function () {
+                if ($(this).html() == '隐藏修改记录') {
+                    $(this).html('显示修改记录');
+                    $('.edit-log').toggle('fast');
+                } else {
+                    $(this).html('隐藏修改记录');
+                    $('.edit-log').toggle('fast');
+                }
+            })
+
+            $('.worker-list li').hover(function () {
+                data = '<p>用户名：' + $(this).attr('userlogin') + '<p><p>手机号码：' + $(this).attr('tel') + '</p><p>备注：' + $(this).attr('desc') + '</p>'
+                index = layer.tips(data, $(this));
+            })
+
+            $('.worker-list li').mouseleave(function () {
+                if (index) {
+                    layer.close(index);
+                }
+            })
+
+            $('.choose_worker').on('click', function () {
+                var li_dom = $(this).parent();
+                id = li_dom.attr('id');
+                nickname = li_dom.attr('nickname');
+                $('.worker_name').html(nickname);
+                $('.worker-list').hide("fast");
+                $('.choosed').show("fast");
+                $('.re_choose').show('fast');
+                $("input[name='worker_id']").val(id);
+            })
+
+            $('.re_choose').on('click', function () {
+                $("input[name='worker_id']").val('');
+                $('.worker-list').show("fast");
+                $('.choosed').hide("fast");
+                $(this).hide();
+            })
+
+            $('.unlock').on('click', function () {
+                $('#test-laydate-normal-cn').removeAttr('disabled');
+                $('#gap').removeAttr('disabled');
+                layui.form.render('select');
+                $(this).hide();
+            })
+
+            $('.add_repair').on('click', function () {
+                parent.layer.open({
+                    type: 2
+                    , title: '添加紧急维修工作'
+                    , content: '/lift/admin_lift/liftWorkAdd.html?lift_id={$lift.id}' + '&fid=' + fid
+                    , maxmin: false
+                    , area: ['500px', '500px']
+                    , btn: ['保存', '取消']
+                    , yes: function (index, layero) {
+                        var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                        submit.click();
+                    }
+                });
+            })
+
+            var marker, map = new AMap.Map('container');
+
+
+            var lng = '{$lift.map_lng}';
+            var lat = '{$lift.map_lat}';
+
+            var autoOptions = {
+                input: "tipinput"
+            };
+            var auto = new AMap.Autocomplete(autoOptions);
+            var placeSearch = new AMap.PlaceSearch({
+                map: map,
+                pageSize: 1
+            });  //构造地点查询类
+            AMap.event.addListener(auto, "select", select);//注册监听，当选中某条记录时会触发
+            function select(e) {
+                placeSearch.setCity(e.poi.adcode);
+                placeSearch.search(e.poi.name);  //关键字查询查询
+                //e.SelectChangeEvent.marker.setMap(null);
+            }
+            addMarker(map, lng, lat);
+            map.setZoomAndCenter(14, [lng, lat]);
+
+            $('.rechoose').on('click', function () {
+                rechoose = true;
+                marker.setMap(null)
+                $('#address_name').val('');
+                $(this).hide('fast');
+            })
+
+            var rechoose = false;
+
+            var clickEventListener = map.on('click', function (e) {
+                if (rechoose) {
+                    var lng = e.lnglat.getLng();
+                    var lat = e.lnglat.getLat();
+                    if (marker) {
+                        marker.setMap(null)
+                    }
+                    addMarker(map, lng, lat);
+                    var geocoder = new AMap.Geocoder({
+                        radius: 50,
+                        extensions: "all"
+                    });
+                    geocoder.getAddress([lng, lat], function (status, result) {
+                        if (status === 'complete' && result.info === 'OK') {
+                            address_name = result.regeocode.formattedAddress
+                            $('#address_name').val(address_name);
+                            $('#add_lng').val(lng);
+                            $('#add_lat').val(lat);
+                        }
+                    });
+                }
+            });
+
+            function addMarker(map, lng, lat) {
+                marker = new AMap.Marker({
+                    icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png",
+                    position: [lng, lat]
+                });
+                marker.setMap(map);
+            }
+
+            function getDate(date, monthNum) {
+                var dateArr = date.split('-');
+                var year = dateArr[0]; //获取当前日期的年份
+                var month = dateArr[1]; //获取当前日期的月份
+                var day = dateArr[2]; //获取当前日期的日
+                var days = new Date(year, month, 0);
+                days = days.getDate(); //获取当前日期中的月的天数
+                var year2 = year;
+                var month2 = parseInt(month) + parseInt(monthNum);
+                if (month2 > 12) {
+                    year2 = parseInt(year2) + parseInt((parseInt(month2) / 12 == 0 ? 1 : parseInt(month2) / 12));
+                    month2 = parseInt(month2) % 12;
+                }
+                var day2 = day;
+                var days2 = new Date(year2, month2, 0);
+                days2 = days2.getDate();
+                if (day2 > days2) {
+                    day2 = days2;
+                }
+                if (month2 < 10) {
+                    month2 = '0' + month2;
+                }
+                var t2 = year2 + '-' + month2 + '-' + day2;
+                return t2;
+            }
+
+        });
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

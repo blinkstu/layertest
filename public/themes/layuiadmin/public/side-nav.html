@@ -1,0 +1,40 @@
+<div class="side-nav">
+    <?php 
+        $current_controller = think\Request::instance()->controller();
+        //echo $current_controller;
+        $contract_id = think\Request::instance()->param('contract_id');
+        $payment_num = count(think\Db::name('payment')->where('contractId',$contract_id)->select());
+        $lift_num = count(think\Db::name('lift')->where('contract_id',$contract_id)->select());
+        ?>
+    <ul class="layui-nav layui-nav-tree" lay-filter="test">
+        <li class="layui-nav-item {$current_controller=='AdminContract' ? 'layui-this' : ''}">
+            <a href="{:url('@contract/Admin_contract/editContract','contract_id='.$contract_id.'&fid='.$Request.param.fid)}">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-dingdantongji"></use>
+                </svg>&nbsp;&nbsp;基本信息
+            </a>
+        </li>
+        <li class="layui-nav-item {$current_controller=='AdminPayment' ? 'layui-this' : ''}">
+            <a href="{:url('@payment/Admin_payment/contractPayment','contract_id='.$contract_id.'&fid='.$Request.param.fid)}">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-fenzhangxitong"></use>
+                </svg>&nbsp;&nbsp;收款信息
+                <span class="layui-badge layui-bg-orange">{$payment_num}</span>
+            </a>
+        </li>
+        <li class="layui-nav-item {$current_controller=='AdminLift' ? 'layui-this' : ''}">
+            <a href="{:url('@lift/Admin_lift/index','contract_id='.$contract_id.'&fid='.$Request.param.fid)}">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-mendianguanli"></use>
+                </svg>&nbsp;&nbsp;电梯管理
+                <span class="layui-badge layui-bg-orange">{$lift_num}</span>
+            </a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-kucunguanli"></use>
+                </svg>&nbsp;&nbsp;配件款项</a>
+        </li>
+    </ul>
+</div>

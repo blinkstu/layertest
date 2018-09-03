@@ -1,0 +1,39 @@
+<include file="public@header" />
+</head>
+
+<body>
+    <div class="wrap js-check-wrap">
+        <button class="btn btn-primary good" data-refresh="1">打开一个Iframe</button>
+    </div>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script>
+        $('.good').on('click', function () {
+            layui.use("layer", function () {
+                var layer = layui.layer;
+                layer.open({
+                    type: 2,
+                    title:'添加一个数据',
+                    area: ['80%', '90%'],
+                    fixed: true, //不固定
+                    content: GV.ROOT + 'admin/Setting/site?',
+                    btn: ['确认'],
+                    yes: function (index, layero) {
+                        if (typeof callback == 'function') {
+                            var iframewindow = window[layero.find('iframe')[0]['name']];
+                            var files = iframewindow.get_selected_files();
+                            console.log(files);
+                            if (files && files.length > 0) {
+                                //callback.apply(this, [this, files, extra_params]);
+                                layer.closeAll();
+                            } else {
+                                return false;
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

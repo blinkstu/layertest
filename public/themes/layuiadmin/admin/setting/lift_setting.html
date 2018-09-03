@@ -1,0 +1,244 @@
+<include file="public@header" />
+<hook name="admin_before_head_end" />
+<link rel="stylesheet" href="__STATIC__/js/noty.css">
+<link rel="stylesheet" href="__STATIC__/js/themes/mint.css">
+</head>
+
+<body style='background: #f2f2f2'>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header layuiadmin-card-header-auto">
+                <h3>设定项
+                    </h1>
+            </div>
+            <div class="layui-card-body">
+                <form class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
+                    <div class="layui-row">
+                        <div class="layui-col-xs7">
+                            <table class="table">
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">建立合同的时候乙方默认名称</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="company_name" value="{$lift_settings.company_name}" required lay-verify="required" placeholder="公司名"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">员工维修电梯时，最远距离多少米</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="number" name="lift_distence" value="{$lift_settings.lift_distence}" required lay-verify="required" placeholder="距离"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">员工维保电梯时，可提前天数</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="number" name="lift_early" value="{$lift_settings.lift_early}" required lay-verify="required" placeholder="天数"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">员工维保电梯时，可迟到天数</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="number" name="lift_late" value="{$lift_settings.lift_late}" required lay-verify="required" placeholder="天数"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">每天几点以后开始提醒</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="number" name="noty_time" value="{$lift_settings.noty_time}" required lay-verify="required" placeholder="time"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">最后一天几点后未完成任务上报</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="number" name="noty_late" value="{$lift_settings.noty_late}" required lay-verify="required" placeholder="time"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <button type="submit" lay-submit="" lay-filter="layuiadmin-app-form-submit" class="layui-btn layui-btn-warm">保存</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script src="__STATIC__/js/noty.js"></script>
+    <script src="https://cdn.bootcss.com/mo-js/0.288.2/mo.min.js"></script>
+    <script src="__STATIC__/js/custom.js"></script>
+
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index'
+        }).use(['index', 'table', 'layer', 'form'], function () {
+            layui.form.on('submit(layuiadmin-app-form-submit)', function (data) {
+                $(data.elem).attr('disabled', true);
+                $(data.elem).html('<i class="layui-icon layui-icon-set layui-anim layui-anim-rotate layui-anim-loop"></i>请稍后...');
+                field = { options: data.field };
+                $.ajax({
+                    url: "/admin/setting/liftSettingPost",
+                    type: "post",
+                    data: field,
+                    success: data => {
+                        if (data.code == 1) {
+                            new Noty({
+                                theme: 'mint',
+                                type: 'success',
+                                layout: 'topCenter',
+                                animation: {
+                                    open: function (promise) {
+                                        var n = this;
+                                        var Timeline = new mojs.Timeline();
+                                        var body = new mojs.Html({
+                                            el: n.barDom,
+                                            x: { 500: 0, delay: 0, duration: 500, easing: 'elastic.out' },
+                                            isForce3d: true,
+                                            onComplete: function () {
+                                                promise(function (resolve) {
+                                                    resolve();
+                                                })
+                                            }
+                                        });
+
+                                        var parent = new mojs.Shape({
+                                            parent: n.barDom,
+                                            width: 200,
+                                            height: n.barDom.getBoundingClientRect().height,
+                                            radius: 0,
+                                            x: { [150]: -150 },
+                                            duration: 1.2 * 500,
+                                            isShowStart: true
+                                        });
+
+                                        n.barDom.style['overflow'] = 'visible';
+                                        parent.el.style['overflow'] = 'hidden';
+
+                                        var burst = new mojs.Burst({
+                                            parent: parent.el,
+                                            count: 10,
+                                            top: n.barDom.getBoundingClientRect().height + 75,
+                                            degree: 90,
+                                            radius: 75,
+                                            angle: { [-90]: 40 },
+                                            children: {
+                                                fill: '#EBD761',
+                                                delay: 'stagger(500, -50)',
+                                                radius: 'rand(8, 25)',
+                                                direction: -1,
+                                                isSwirl: true
+                                            }
+                                        });
+
+                                        var fadeBurst = new mojs.Burst({
+                                            parent: parent.el,
+                                            count: 2,
+                                            degree: 0,
+                                            angle: 75,
+                                            radius: { 0: 100 },
+                                            top: '90%',
+                                            children: {
+                                                fill: '#EBD761',
+                                                pathScale: [.65, 1],
+                                                radius: 'rand(12, 15)',
+                                                direction: [-1, 1],
+                                                delay: .8 * 500,
+                                                isSwirl: true
+                                            }
+                                        });
+
+                                        Timeline.add(body, burst, fadeBurst, parent);
+                                        Timeline.play();
+                                    },
+                                    close: function (promise) {
+                                        var n = this;
+                                        new mojs.Html({
+                                            el: n.barDom,
+                                            x: { 0: 500, delay: 10, duration: 500, easing: 'cubic.out' },
+                                            skewY: { 0: 10, delay: 10, duration: 500, easing: 'cubic.out' },
+                                            isForce3d: true,
+                                            onComplete: function () {
+                                                promise(function (resolve) {
+                                                    resolve();
+                                                })
+                                            }
+                                        }).play();
+                                    }
+                                },
+                                text: data.msg,
+                                // animation: {
+                                //     open: 'animated bounceInDown', // Animate.css class names
+                                //     close: 'animated bounceOutUp', // Animate.css class names
+                                // },
+                                timeout: 1200,
+                            }).show();
+                            recover();
+                        } else {
+                            new Noty({
+                                theme: 'mint',
+                                text: data.msg,
+                                type: 'error',
+                                layout: 'topCenter',
+                                // animation: {
+                                //     open: 'animated bounceInDown', // Animate.css class names
+                                //     close: 'animated bounceOutUp', // Animate.css class names
+                                // },
+                                timeout: 1200,
+                                callbacks: {
+                                    afterClose: function () {
+                                        location.reload();
+                                    }
+                                }
+                            }).show();
+                            recover();
+                        }
+                    }
+                });
+
+                function recover() {
+                    $(data.elem).attr('disabled', false);
+                    $(data.elem).html('保存');
+                }
+
+                return false;
+            });
+        });
+
+
+    </script>
+
+
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

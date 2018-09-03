@@ -1,0 +1,144 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+        height: 100%;
+    }
+
+    body {
+        height: 100%;
+    }
+</style>
+</head>
+
+<body>
+    <div class="main-page">
+        <include file="public@side-nav" />
+        <div class="main-body">
+            <div class="layui-card my-2">
+                <div class="layui-card-header layuiadmin-card-header-auto" style="padding:20px">
+                    <button class="layui-btn layuiadmin-btn-list" data-type="addPayment"><i class="layui-icon layui-icon-add-1"></i>添加收款信息</button>
+                </div>
+                <div class="layui-card-body">
+                    <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script type="text/html" id="totalAmount">
+        {{# 
+            var formatCurrency =  function (num) {  
+                var num = num.toString().replace(/\$|\,/g,'');  
+                if(isNaN(num))  
+                num = "0";  
+                var sign = (num == (num = Math.abs(num)));  
+                num = Math.floor(num*100+0.50000000001);  
+                var cents = num%100;  
+                num = Math.floor(num/100).toString();  
+                if(cents<10)  
+                cents = "0" + cents;  
+                for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)  
+                num = num.substring(0,num.length-(4*i+3))+','+  
+                num.substring(num.length-(4*i+3));  
+                return (((sign)?'':'-') + num + '.' + cents);  
+            }
+        }}
+        <div class="text-red"> {{ formatCurrency(d.totalAmount) }}</div>
+    </script>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index'
+        }).use(['index', 'table', 'layer'], function () {
+            var fid= self.frameElement.getAttribute('__idm_frm__');
+            var $ = layui.$, active = {
+                addPayment: function () {
+                    parent.layer.open({
+                        type: 2
+                        , title: '添加收款信息'
+                        , content: '/payment/admin_payment/addPayment.html?fid='+fid+'&contract_id={$contract.id}'
+                        , maxmin: false
+                        , area: ['750px', '95%']
+                        , btn: ['添加', '取消']
+                        , yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                }
+            };
+
+            layui.table.render({
+                elem: '#LAY-app-content-list'
+                , height: 400
+                , url: '/payment/admin_payment/contractPaymentFetchData?contract_id=' + '{$Request.param.contract_id}' //数据接口
+                , page: true //开启分页
+                , size: 'sm' //小尺寸的表格
+                , cols: [[ //表头
+                    { field: 'paymentType', title: '付款类型', fixed: 'left', width: 100, event: 'edit' }
+                    , { field: 'payer', title: '付款人', event: 'edit' }
+                    , { field: 'payTime', title: '付款时间' ,sort: true, event: 'edit'}
+                    , { field: 'totalAmount', title: '总金额' , templet: '#totalAmount', event: 'edit' }
+                    , { field: 'paymentNote', title: '备注', event: 'edit' }
+                    , { title: '操作', toolbar: '#toolbar' }
+                ]]
+            });
+
+            $('.layui-btn.layuiadmin-btn-list').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+            layui.table.on('tool(LAY-app-content-list)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'edit') {
+                    parent.layer.open({
+                        type: 2
+                        , title: '编辑收款'
+                        , content: '/payment/admin_payment/editPayment.html?fid='+fid+'&id=' + data.id
+                        , maxmin: false
+                        , area: ['750px', '95%']
+                        , btn: ['保存', '取消']
+                        , yes: function (index, layero) {
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                } else if (layEvent === 'del') {
+                    layer.confirm('确定要删除吗？', {
+                        btn: ['确定', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                url: "/payment/admin_payment/delPaymentPost&id=" + data.id,
+                                type: "post",
+                                data: { id: data.id },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layui.layer.msg(data.msg);
+                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    } else {
+                                        layui.layer.msg(data.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+
+        })
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

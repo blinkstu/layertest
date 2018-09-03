@@ -1,0 +1,209 @@
+<include file="public@header" />
+<hook name="admin_before_head_end" />
+
+</head>
+
+<body style='background: #f2f2f2'>
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header layuiadmin-card-header-auto">
+                <button class="layui-btn layuiadmin-btn-list" data-type="add">录入合同</button>
+            </div>
+            <div class="layui-card-body">
+                <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
+            </div>
+        </div>
+    </div>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index'
+        }).use(['index', 'table', 'layer'], function () {
+            var table = layui.table;
+            var fid = self.frameElement.getAttribute('__idm_frm__');
+            table.render({
+                elem: '#LAY-app-content-list'
+                , height: 450
+                , url: '/contract/admin_contract/fetchContractData' //数据接口
+                , page: true //开启分页
+                , cols: [[ //表头
+                    { field: 'contract_id', title: '订单编号', sort: true, fixed: 'left', width: 100 ,event: 'edit' }
+                    , { field: 'contract_name', title: '订单名称', width: 140 ,event: 'edit'}
+                    , { field: 'user_nickname', title: '客户账号', templet: '#customer',event: 'edit' }
+                    , { field: 'total_amount', title: '总金额', templet: '#totalAmount',event: 'edit' }
+                    , { field: 'start_date', title: '开始时间', width: 110, sort: true,event: 'edit' }
+                    , { field: 'end_date', title: '到期时间', width: 110, sort: true,event: 'edit' }
+                    , { field: 'type', title: '类型', templet: '#typeTpl',event: 'edit' }
+                    , { field: 'a_name', title: '甲方',event: 'edit' }
+                    , { field: 'b_name', title: '乙方' ,event: 'edit'}
+                    , { field: 'notes', title: '备注' ,event: 'edit'}
+                    , { field: 'status', title: '状态', width: 80, templet: '#statusTpl',event: 'edit' }
+                    , { title: '操作', align: 'center', toolbar: '#toolbar' }
+                ]]
+            });
+            table.on('tool(LAY-app-content-list)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'edit') {
+                    parent.layer.open({
+                        type: 2
+                        , title: '管理合同 "' + data.contract_name + '" '
+                        , content: '/contract/admin_contract/editContract.html?fid=' + fid + '&contract_id=' + data.id
+                        , maxmin: true
+                        , shade: 0
+                        , anim: 5
+                        , area: ['90%', '90%']
+                        , btn: ['关闭']
+                        , yes: function (index, layero) {
+                            //var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            //var iframe = layero.find('iframe');
+                            //submit.click();
+                            //if (submit.length === 0) {
+                            //    iframe[0].contentWindow.layui.layer.msg('请在基本信息页面点击保存', { zIndex: 20000000 });
+                            //}
+                            parent.layer.close(index);
+                            layui.table.reload('LAY-app-content-list');
+                        }
+                        , cancel: function (index, layero) {
+                            layui.table.reload('LAY-app-content-list');
+                        }
+                    });
+                } else if (layEvent === 'del') {
+                    layer.confirm('确定要删除 ' + data.contract_name + ' 吗？', {
+                        btn: ['确定', '取消'],
+                        yes: function () {
+                            $.ajax({
+                                url: "/contract/admin_contract/delContractPost?id=" + data.id,
+                                type: "post",
+                                data: { id: data.id },
+                                success: function (data) {
+                                    if (data.code == 1) {
+                                        layui.layer.msg(data.msg);
+                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    } else {
+                                        layui.layer.msg(data.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else if (layEvent === 'managePayment') {
+                    var index = parent.layer.open({
+                        type: 2,
+                        title: '管理 "' + data.contract_name + '" ',
+                        content: '/payment/admin_payment/contractPayment?contract_id=' + data.id,
+                        area: ['90%', '90%'],
+                        btn: ['关闭']
+                    })
+                    //parent.layer.full(index)
+                } else if (layEvent === 'dianti') {
+                    layer.tips('<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="managePayment">收款</a>', this);
+                }
+            });
+
+            var $ = layui.$, active = {
+                add: function () {
+                    parent.layer.open({
+                        type: 2
+                        , title: '录入合同'
+                        , content: '/contract/admin_contract/addContract.html?fid=' + fid
+                        , maxmin: false
+                        , area: ['750px', '95%']
+                        , btn: ['录入', '取消']
+                        , yes: function (index, layero) {
+                            //点击确认触发 iframe 内容中的按钮提交
+                            var submit = layero.find('iframe').contents().find("#layuiadmin-app-form-submit");
+                            submit.click();
+                        }
+                    });
+                },
+                edit: function (el) {
+                    alert(el.attr('data-id'));
+                }
+            };
+
+            $('.layui-btn.layuiadmin-btn-list').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+        });
+
+
+    </script>
+
+
+    <!--模板templates-->
+    <script type="text/html" id="toolbar">
+        <!---a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="managePayment">管理</a>
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a-->
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script type="text/html" id="customer">
+        <div class="text-red">{{ d.user_nickname}}</div>
+    </script>
+    <script type="text/html" id="statusTpl">
+        {{# 
+            var display =  function (status,time) {  
+                var today = new Date();
+                today = today.getTime();
+                var endDate = new Date(time);
+                endDate = endDate.getTime();
+
+                if(status != 1){
+                    return '<i class="layui-icon layui-icon-close" style="color: #FF5722;">失效</i>';
+                } else {
+                    if(today>endDate){
+                        return '<i class="layui-icon layui-icon-close" style="color: #FFB800;">过期</i>';
+                    }else{
+                        return '<i class="layui-icon layui-icon-ok" style="color: #1E9FFF;">正常</i>';
+                    }
+                }
+            }
+        }}
+
+        {{ display(d.status,d.end_date) }}
+
+        {{#  if(d.status == 1){ }}
+        
+        {{#  } else { }}
+           
+        {{#  } }}
+    </script>
+    <script type="text/html" id="typeTpl">
+        {{#  if(d.type == 1){ }}
+        <i>半包</i>
+        {{#  } else { }}
+            <i>全包</i>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="totalAmount">
+        {{# 
+            var formatCurrency =  function (num) {  
+                var num = num.toString().replace(/\$|\,/g,'');  
+                if(isNaN(num))  
+                num = "0";  
+                var sign = (num == (num = Math.abs(num)));  
+                num = Math.floor(num*100+0.50000000001);  
+                var cents = num%100;  
+                num = Math.floor(num/100).toString();  
+                if(cents<10)  
+                cents = "0" + cents;  
+                for (var i = 0; i < Math.floor((num.length-(1+i))/3); i++)  
+                num = num.substring(0,num.length-(4*i+3))+','+  
+                num.substring(num.length-(4*i+3));  
+                return (((sign)?'':'-') + num + '.' + cents);  
+            }
+        }}
+        <div> {{ formatCurrency(d.total_amount) }}</div>
+    </script>
+
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>
