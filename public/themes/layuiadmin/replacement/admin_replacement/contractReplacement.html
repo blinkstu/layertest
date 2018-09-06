@@ -1,0 +1,50 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+        height: 100%;
+    }
+
+    body {
+        height: 100%;
+    }
+</style>
+</head>
+
+<body>
+    <div class="main-page">
+        <include file="public@side-nav" />
+        <div class="main-body">
+            <div class="layui-card my-2">
+                <div class="layui-card-header layuiadmin-card-header-auto" style="padding:20px">
+                    <button class="layui-btn layuiadmin-btn-list" data-type="addPayment">
+                        <i class="layui-icon layui-icon-add-1"></i>添加配件款项</button>
+                </div>
+                <div class="layui-card-body">
+                    <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/html" id="toolbar">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index'
+        }).use(['index', 'table', 'layer'], function () {
+            var fid = self.frameElement.getAttribute('__idm_frm__');
+           
+
+
+        })
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

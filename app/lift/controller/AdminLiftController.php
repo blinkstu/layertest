@@ -251,6 +251,12 @@ class AdminLiftController extends AdminBaseController
 
     public function liftWorkEdit()
     {
+        $param = $this->request->param();
+        $id = $param['id'];
+        $work = new WorkModel();
+        $work = $work->where('id',$id)->with('worker')->find();
+
+        $this->assign('work',$work);
         return $this->fetch('editWork');
     }
 
@@ -306,12 +312,35 @@ class AdminLiftController extends AdminBaseController
         }
     }
 
-    public function liftWorkDonePost(){
+    public function doneWorkPost(){
         if($this->request->isPost()){
             $params = $this->request->param();
             $id = $params['id'];
             $work = new WorkModel;
-            $work = $work->where('id',$params['id'])->update(['status'=>1]);
+            $work = $work->where('id',$params['id'])->update(['status' => 1]);
+            $this->success('设定成功');
+        }
+    }
+
+    public function editWorkPost(){
+        if($this->request->isPost()){
+            $params = $this->request->param();
+            $id = $params['id'];
+            $work = new WorkModel();
+            $work = $work->where('id',$id)->update([
+                'work_time' => $params['finish_date'],
+                'note'  => $params['desc']
+            ]);
+            $this->success('保存成功');
+        }
+    }
+
+    public function notdoneWorkPost(){
+        if($this->request->isPost()){
+            $params = $this->request->param();
+            $id = $params['id'];
+            $work = new WorkModel;
+            $work = $work->where('id',$params['id'])->update(['status' => 4]);
             $this->success('设定成功');
         }
     }

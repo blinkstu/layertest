@@ -171,12 +171,11 @@
   background: #fff;
   height: 50px;
   display: flex;
-  width: 100%;
   align-content: center;
   align-items: center;
 }
 
 .bottom-content{
   width: 100%;
-  padding: 0px 20px;
+  padding: 0px 0px;
 }

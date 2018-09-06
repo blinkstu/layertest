@@ -16,23 +16,24 @@
 <body>
     <form class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
         <input type="hidden" name="lift_id" id="lift_id" value='{$Request.param.lift_id}'>
+        <input type="hidden" name="id" value="{$work.id}">
         <div class="layui-form-item">
-            <label class="layui-form-label">选择员工</label>
-            <div class="layui-input-inline">
-
+            <label class="layui-form-label">员工</label>
+            <div class="layui-inline">
+                <input type="text" value="{$work.user_nickname}" disabled lay-verify="required" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">完成时间</label>
             <div class="layui-inline">
                 <!-- 注意：这一层元素并不是必须的 -->
-                <input type="text" name="finish_date" class="layui-input" id="dead_line">
+                <input type="text" name="finish_date" <?php if($work['type'] == 1){ echo 'disabled'; } ?> value="{$work.work_time}" class="layui-input" id="dead_line">
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">任务描述</label>
             <div class="layui-input-inline">
-                <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                <textarea name="desc" placeholder="请输入内容" class="layui-textarea">{$work.note}</textarea>
             </div>
         </div>
         <div class="layui-form-item layui-hide">
@@ -41,14 +42,21 @@
             </div>
         </div>
 
-    </form>
-    <div class="page-bottom">
-        <div class="bottom-content">
-            <a class="layui-btn layui-btn-danger layui-btn" lay-event="edit">删除任务</a>
-            <a class="layui-btn layui-btn-normal layui-btn" lay-event="edit">设置为已完成</a>
-            <a class="layui-btn layui-btn-normal layui-btn" lay-event="edit">保存修改</a>
+        <div class="page-bottom">
+            <div class="bottom-content">
+                <?php if($work['type'] == 2) { ?>
+                <button class="layui-btn layui-btn-danger layui-btn" lay-submit lay-filter="layuiadmin-app-form-del">删除任务</button>
+                <?php } ?>
+                <?php if($work['status'] == 4) { ?>
+                <button class="layui-btn layui-btn-normal layui-btn" lay-submit lay-filter="layuiadmin-app-form-done">设置为已完成</button>
+                <?php } ?>
+                <?php if($work['status'] == 1) { ?>
+                <button class="layui-btn layui-btn-warm layui-btn" lay-submit lay-filter="layuiadmin-app-form-notdone">设置为未完成</button>
+                <?php } ?>
+                <button class="layui-btn layui-btn-normal layui-btn" lay-submit lay-filter="layuiadmin-app-form-save">保存修改</button>
+            </div>
         </div>
-    </div>
+    </form>
     <script src="__STATIC__/js/admin.js"></script>
     <script src="__TMPL__/public/assets/layui/layui.js"></script>
     <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.8&key=0b697e9fb088d67868b80518230aa345&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch"></script>
@@ -64,27 +72,100 @@
                 min: today,
                 elem: '#dead_line' //指定元素
             });
-
-            layui.form.on('submit(layuiadmin-app-form-submit)', function (data) {
+            layui.form.on('submit(layuiadmin-app-form-del)', function (data) {
                 var field = data.field; //获取提交的字段
+                var elem = data.elem;
                 var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                if ($('.holding').length > 0) {
-                    layui.layer.msg('还有未上传的扫描件');
-                    return false;
-                }
+                confirm = parent.layer.confirm('确定要删除此任务吗？', {
+                    btn: ['确定', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            url: "/lift/admin_lift/delWorkPost?id=" + field.id,
+                            type: "post",
+                            data: { id: data.id },
+                            success: function (data) {
+                                if (data.code == 1) {
+                                    parent.parent.good("{$Request.param.fid}", index);
+                                    layui.layer.msg(data.msg);
+                                    parent.layer.close(confirm);
+                                } else {
+                                    layui.layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+                return false;
+            });
+            layui.form.on('submit(layuiadmin-app-form-done)', function (data) {
+                var field = data.field; //获取提交的字段
+                var elem = data.elem;
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                confirm = parent.layer.confirm('确定要使此任务已完成吗？', {
+                    btn: ['确定', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            url: "/lift/admin_lift/doneWorkPost?id=" + field.id,
+                            type: "post",
+                            data: { id: data.id },
+                            success: function (data) {
+                                if (data.code == 1) {
+                                    parent.parent.good("{$Request.param.fid}", index);
+                                    layui.layer.msg(data.msg);
+                                    parent.layer.close(confirm);
+                                } else {
+                                    layui.layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+                return false;
+            });
+            layui.form.on('submit(layuiadmin-app-form-notdone)', function (data) {
+                var field = data.field; //获取提交的字段
+                var elem = data.elem;
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                confirm = parent.layer.confirm('确定要使此任务为未完成吗？', {
+                    btn: ['确定', '取消'],
+                    yes: function () {
+                        $.ajax({
+                            url: "/lift/admin_lift/notdoneWorkPost?id=" + field.id,
+                            type: "post",
+                            data: { id: data.id },
+                            success: function (data) {
+                                if (data.code == 1) {
+                                    parent.parent.good("{$Request.param.fid}", index);
+                                    layui.layer.msg(data.msg);
+                                    parent.layer.close(confirm);
+                                } else {
+                                    layui.layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    }
+                });
+                return false;
+            });
+            layui.form.on('submit(layuiadmin-app-form-save)', function (data) {
+                var field = data.field; //获取提交的字段
+                var elem = data.elem;
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                 $.ajax({
-                    url: "/lift/admin_lift/liftWorkAddPost",
+                    url: "/lift/admin_lift/editWorkPost?id=" + field.id,
                     type: "post",
                     data: field,
                     success: function (data) {
                         if (data.code == 1) {
                             parent.parent.good("{$Request.param.fid}", index);
+                            layui.layer.msg(data.msg);
+                            parent.layer.close(confirm);
                         } else {
                             layui.layer.msg(data.msg);
                         }
-
                     }
                 });
+                return false;
             });
 
         });

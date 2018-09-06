@@ -30,8 +30,8 @@
                 <span class="layui-badge layui-bg-orange">{$lift_num}</span>
             </a>
         </li>
-        <li class="layui-nav-item">
-            <a href="">
+        <li class="layui-nav-item {$current_controller=='AdminReplacement' ? 'layui-this' : ''}">
+            <a href="{:url('@replacement/admin_replacement/index','contract_id='.$contract_id.'&fid='.$Request.param.fid)}">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-kucunguanli"></use>
                 </svg>&nbsp;&nbsp;配件款项</a>
