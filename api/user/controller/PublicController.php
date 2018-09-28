@@ -10,6 +10,7 @@ namespace api\user\controller;
 
 use think\Db;
 use think\Validate;
+use think\Request;
 use cmf\controller\RestBaseController;
 use api\user\model\UserModel;
 
@@ -165,6 +166,12 @@ class PublicController extends RestBaseController
         $userId   = $this->getUserId();
         $user = new UserModel();
         $userData = $user->with('role.roleinfo')->where('id='.$userId)->find();
+        $userData = $userData->toArray();
+        $request = Request::instance();
+        if($userData['avatar']==""){
+            $header = $this->request->header();
+            $userData['avatar'] = "https://".$header['host']."/static/images/headimg.jpg";
+        }
         $this->success("获取成功", $userData);
     }
 

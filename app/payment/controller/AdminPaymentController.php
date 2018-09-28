@@ -134,7 +134,7 @@ class AdminPaymentController extends AdminBaseController
         }
     }
 
-    public function delPaymentPost() {
+    public function delReplacementPost() {
         $params = $this->request->param();
         $id = $params['id'];
         $payment = new PaymentModel;

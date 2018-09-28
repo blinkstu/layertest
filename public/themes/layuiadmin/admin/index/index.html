@@ -233,7 +233,7 @@
             layer.close(index);
         }
         // 初始化io对象
-        var socket = io('http://127.0.0.1:2120');
+        var socket = io('https://127.0.0.1:2120');
         socket.on('connect', function () { socket.emit('login', 1); $('.connect-error').hide('fast'); });
         socket.on('new_msg', function (msg) { sendMsg(msg); });
         socket.on('connect_error', (error) => {

@@ -30,7 +30,7 @@ class MainController extends AdminBaseController
         $dashboardWidgets = [];
         $widgets          = cmf_get_option('admin_dashboard_widgets');
 
-        $response = cmf_curl_get("http://127.0.0.1:2120/socket.io");
+        $response = cmf_curl_get("https://127.0.0.1:2120/socket.io");
         $response = json_decode($response, true);
 
         $defaultDashboardWidgets = [

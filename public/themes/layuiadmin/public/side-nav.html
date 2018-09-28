@@ -5,6 +5,7 @@
         $contract_id = think\Request::instance()->param('contract_id');
         $payment_num = count(think\Db::name('payment')->where('contractId',$contract_id)->select());
         $lift_num = count(think\Db::name('lift')->where('contract_id',$contract_id)->select());
+        $replacement_num = count(think\Db::name('replacement')->where('contract_id',$contract_id)->select());
         ?>
     <ul class="layui-nav layui-nav-tree" lay-filter="test">
         <li class="layui-nav-item {$current_controller=='AdminContract' ? 'layui-this' : ''}">
@@ -34,7 +35,9 @@
             <a href="{:url('@replacement/admin_replacement/index','contract_id='.$contract_id.'&fid='.$Request.param.fid)}">
                 <svg class="icon" aria-hidden="true">
                     <use xlink:href="#icon-kucunguanli"></use>
-                </svg>&nbsp;&nbsp;配件款项</a>
+                </svg>&nbsp;&nbsp;配件款项
+                <span class="layui-badge layui-bg-orange">{$replacement_num}</span>
+            </a>
         </li>
     </ul>
 </div>

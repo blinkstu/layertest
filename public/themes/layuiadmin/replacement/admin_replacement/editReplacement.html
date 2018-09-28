@@ -1,0 +1,274 @@
+<include file="public@min-header" />
+<hook name="admin_before_head_end" />
+<style>
+    html {
+        background: #efefef;
+        height: 100%;
+    }
+
+    #container {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+</head>
+
+<body>
+    <form class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
+        <input type="hidden" name="worker_id">
+        <input type="hidden" name="contract_id" value="{$Request.param.contract_id}">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                基本信息
+            </div>
+            <div class="layui-card-body">
+                <input type="hidden" name="id" value="{$replacement.id}" id="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配件名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="title" value="{$replacement.title}" required lay-verify="required"
+                            placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">配件型号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="model" value="{$replacement.model}" required lay-verify="required"
+                            placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">数量</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="num" value="{$replacement.num}" required lay-verify="required"
+                            placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">总金额</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="price" value="{$replacement.price}" required lay-verify="required" id="moneyNum"
+                            placeholder="" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-inline">
+                        <textarea name="note" placeholder="备注" class="layui-textarea">{$replacement.note}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">图片资料</div>
+            <div class="layui-card-body">
+
+                <div class="layui-row">
+
+                    <div class="layui-upload">
+                        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="test-upload-testList">选择图片</button>
+                        <button type="button" class="layui-btn layui-btn-sm" id="test-upload-testListAction">开始上传</button>
+                        <input class="layui-upload-file" type="file" accept="undefined" name="file" multiple="">
+                        <div class="layui-upload-list">
+                            <table class="layui-table" id='demo' lay-size="sm" lay-filter="demo">
+                                <thead>
+                                    <tr>
+                                        <th style="width:80px;">文件名</th>
+                                        <th>备注</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="test-upload-demoList">
+                                    <foreach name="photos" item="item" key="key">
+                                        <tr id="upload-{$key}">
+                                            <td>
+                                                <div id="photo{$key}" class="img-wapper">
+                                                    <img layer-src="/upload/{$item['url']}" src="/upload/{$item['url']}"
+                                                        layer-index="0">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type 'text'="" name="photos[{$key}][description]" value="{$item['description']}"
+                                                    placeholder="备注信息" class="layui-input">
+                                            </td>
+                                            <td>
+                                                <span style="color: #5FB878;">上传成功</span>
+                                            </td>
+                                            <td>
+                                                <button class="layui-btn layui-btn-xs layui-btn-danger test-upload-demo-delete2">删除</button>
+                                            </td>
+                                            <input type="hidden" name="photos[{$key}][url]" class="img-input" value="{$item['url']}">
+                                        </tr>
+                                    </foreach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit"
+                    value="确认添加">
+                <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit"
+                    value="确认编辑">
+            </div>
+    </form>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.8&key=0b697e9fb088d67868b80518230aa345&plugin=AMap.Geocoder,AMap.Autocomplete,AMap.PlaceSearch"></script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径 
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'form', 'layer', 'laydate', 'upload', 'table'], function () {
+            layui.form.on('submit(layuiadmin-app-form-submit)', function (data) {
+                var field = data.field; //获取提交的字段
+                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                if ($('.holding').length > 0) {
+                    layui.layer.msg('还有未上传的扫描件');
+                    return false;
+                }
+                $.ajax({
+                    url: "/replacement/admin_replacement/editReplacementPost",
+                    type: "post",
+                    data: field,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            parent.parent.good('{$Request.param.fid}', index);
+                        } else {
+                            layui.layer.msg(data.msg);
+                        }
+
+                    }
+                });
+
+            });
+
+            $("#moneyNum").on("keyup", formatMN);
+
+            $("#moneyNum").on({
+                focus: function () {
+                    $(this).attr("data-fmt", $(this).val()); //将当前值存入自定义属性
+                },
+                blur: function () {
+                    var oldVal = $(this).attr("data-fmt"); //获取原值
+                    var newVal = $(this).val(); //获取当前值
+                    if (oldVal != newVal) {
+                        if (newVal == "" || isNaN(newVal)) {
+                            this.value = "";
+                            return this.value;
+                        }
+                        var s = this.value;
+                        var temp;
+
+                        if (/.+(\..*\.|\-).*/.test(s)) {
+                            return;
+                        }
+                        s = parseFloat((s + "").replace(/[^\d\.\-]/g, "")).toFixed(2) + "";
+                        var l = s.split(".")[0].split("").reverse(),
+                            r = s.split(".")[1];
+                        t = "";
+                        for (i = 0; i < l.length; i++) {
+                            t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length && (l[i + 1] != '-') ? "," : "");
+                        }
+                        temp = t.split("").reverse().join("") + "." + r;
+                        this.value = temp;
+                        return this.value;
+                    }
+                }
+            });
+
+            function formatMN(e) {
+                this.value = this.value.replace(/[^\d\.\-]/g, "");
+                $(this).attr("data-oral", parseFloat(e.target.value.replace(/[^\d\.-]/g, "")));
+            }
+
+            $('.img-wapper').each(function () {
+                id = $(this).attr('id');
+                layui.layer.photos({
+                    photos: '#' + id
+                    , anim: 5
+                });
+            });
+
+            var demoListView = $('#test-upload-demoList');
+            uploadListIns = layui.upload.render({
+                elem: '#test-upload-testList'
+                , url: '/user/asset/webuploader'
+                , accept: 'file'
+                , multiple: true
+                , auto: false
+                , bindAction: '#test-upload-testListAction'
+                , before: function (obj) {
+                    //layer.load();
+                }, choose: function (obj) {
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    //读取本地文件
+                    var i = "{$photos_num}";
+                    obj.preview(function (index, file, result) {
+                        var tr = $(['<tr id="upload-' + index + '">'
+                            , '<td><div id="photo' + index + '" class="img-wapper"><img layer-src="' + result + '" src="' + result + '" /></div></td>'
+                            , "<td><input type'text' name='photos[" + i + "][description]' placeholder='备注信息' class='layui-input'></td>"
+                            , '<td><span class="holding">等待上传</span></td>'
+                            , '<td>'
+                            , '<button class="layui-btn layui-btn-xs test-upload-demo-reload layui-hide">重传</button>'
+                            , '<button class="layui-btn layui-btn-xs layui-btn-danger test-upload-demo-delete">删除</button>'
+                            , '</td>'
+                            , "<input type='hidden' name='photos[" + i + "][url]' class='img-input'>"
+                            , '</tr>'].join(''));
+                        i += 1;
+                        //单个重传
+                        tr.find('.test-upload-demo-reload').on('click', function () {
+                            obj.upload(index, file);
+                        });
+
+                        //删除
+                        tr.find('.test-upload-demo-delete').on('click', function () {
+                            delete files[index]; //删除对应的文件
+                            tr.remove();
+                            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        });
+                        demoListView.append(tr);
+                        layui.layer.photos({
+                            photos: '#photo' + index
+                            , anim: 5
+                        });
+                    });
+                }
+                , done: function (res, index, upload) {
+                    if (res.code == 1) { //上传成功
+                        var tr = demoListView.find('tr#upload-' + index)
+                            , tds = tr.children();
+                        tds.eq(0).html('<div id="photo' + index + '" class="img-wapper"><img layer-src="' + res.data.preview_url + '" src="' + res.data.preview_url + '" /></div>');
+                        tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                        //tds.eq(3).html(''); //清空操作
+                        layui.layer.photos({
+                            photos: '#photo' + index
+                            , anim: 5
+                        });
+                        tr.children('.img-input').val(res.data.filepath);
+                        return delete this.files[index]; //删除文件队列已经上传成功的文件
+                    }
+
+                    this.error(res, index, upload);
+                }
+                , allDone: function () {
+                    //layer.closeAll('loading');
+                }
+                , error: function (res, index, upload) {
+                    //layer.closeAll('loading');
+                    var tr = demoListView.find('tr#upload-' + index)
+                        , tds = tr.children();
+                    tds.eq(2).html('<span style="color: #FF5722;">' + res.msg + '</span>');
+                    tds.eq(3).find('.test-upload-demo-reload').removeClass('layui-hide'); //显示重传
+                }
+            });
+        });
+
+    </script>
+    <hook name="admin_before_body_end" />
+</body>
+
+</html>

@@ -34,7 +34,7 @@
             index: 'lib/index' //主入口模块
         }).use('index');
         layui.use('carousel', function () {
-            var socket = io('http://127.0.0.1:2120');
+            var socket = io('https://127.0.0.1:2120');
             socket.on('connect', function () {
                // $('.connect-success').show('fast');
                // $('.connect-error').hide('fast');
