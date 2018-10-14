@@ -30,8 +30,8 @@
                 </p>
                 <ul class="worker-list">
                     <volist name="staffs" id="vo">
-                        <li class="layui-anim layui-anim-scale" nickname="{$vo.user_nickname}" id="{$vo.id}" desc="{$vo.description}" userlogin="{$vo.user_login}"
-                            tel="{$vo.mobile}">
+                        <li class="layui-anim layui-anim-scale" nickname="{$vo.user_nickname}" id="{$vo.id}" desc="{$vo.description}"
+                            userlogin="{$vo.user_login}" tel="{$vo.mobile}">
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-nanxing"></use>
                             </svg>
@@ -57,13 +57,14 @@
                 <div class="layui-row">
                     <div class="layui-col-xs6">
                         <div class="layui-form-item">
-                            <label class="layui-form-label">首次保养</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="next_date" class="layui-input" id="test-laydate-normal-cn" placeholder="yyyy-MM-dd" lay-key="1">
+                            <label class="layui-form-label">首次半月度保养时间</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="next_date" class="layui-input" id="test-laydate-normal-cn"
+                                    placeholder="yyyy-MM-dd" lay-key="1">
                             </div>
                         </div>
                     </div>
-                    <div class="layui-col-xs6">
+                    <!--div class="layui-col-xs6">
                         <div class="layui-form-item">
                             <label class="layui-form-label">保养间隔</label>
                             <div class="layui-input-inline">
@@ -77,7 +78,7 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div-->
                 </div>
 
 
@@ -91,25 +92,29 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">电梯编号</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_id" required lay-verify="required" placeholder="电梯编号" autocomplete="off" class="layui-input">
+                        <input type="text" name="lift_id" required lay-verify="required" placeholder="电梯编号"
+                            autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">电梯型号</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_model" required lay-verify="required" placeholder="电梯型号" autocomplete="off" class="layui-input">
+                        <input type="text" name="lift_model" required lay-verify="required" placeholder="电梯型号"
+                            autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">使用单位</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_belongs" required lay-verify="required" placeholder="使用单位" autocomplete="off" class="layui-input">
+                        <input type="text" name="lift_belongs" required lay-verify="required" placeholder="使用单位"
+                            autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">电梯备注</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_desc" required lay-verify="required" placeholder="备注" autocomplete="off" class="layui-input">
+                        <input type="text" name="lift_desc" required lay-verify="required" placeholder="备注"
+                            autocomplete="off" class="layui-input">
                     </div>
                 </div>
             </div>
@@ -128,15 +133,17 @@
                     <div class="layui-input-block">
                         <input type="hidden" name="addLng" id="add_lng">
                         <input type="hidden" name="addLat" id="add_lat">
-                        <input type="text" id="address_name" name="address_name" required lay-verify="required" placeholder="请输入标题" disabled autocomplete="off"
-                            class="layui-input">
+                        <input type="text" id="address_name" name="address_name" required lay-verify="required"
+                            placeholder="请输入标题" disabled autocomplete="off" class="layui-input">
                     </div>
                 </div>
             </div>
         </div>
         <div class="layui-form-item layui-hide">
-            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
-            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit"
+                value="确认添加">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit"
+                value="确认编辑">
         </div>
     </form>
     <script src="__STATIC__/js/admin.js"></script>
@@ -152,8 +159,11 @@
             //parent.parent.good('{$Request.param.fid}', index);
             var d = new Date()
             today = d.toLocaleDateString();
+            var d = new Date();
+
             layui.laydate.render({
                 elem: '#test-laydate-normal-cn',
+                value: new Date(d.getTime() + 15 * 24 * 60 * 60 * 1000),
                 min: today,
                 done: function (value, date, endDate) {
                     getDates(value);

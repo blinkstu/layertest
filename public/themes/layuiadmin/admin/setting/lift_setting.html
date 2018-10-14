@@ -82,6 +82,17 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">维保时间（单位分钟）</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="number" name="maintain_time" value="{$lift_settings.maintain_time}" required lay-verify="required" placeholder="time"
+                                                autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
                             </table>
                             <button type="submit" lay-submit="" lay-filter="layuiadmin-app-form-submit" class="layui-btn layui-btn-warm">保存</button>
                         </div>

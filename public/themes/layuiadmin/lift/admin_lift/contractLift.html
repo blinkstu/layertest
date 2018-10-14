@@ -43,6 +43,19 @@
             年度
         {{# } }}
     </script>
+    <script type="text/html" id="status">
+            {{# if(d.status === 0){ }} 
+                <span class="layui-badge layui-bg-blue">正常</span>
+            {{# } else if(d.status === 1){ }}
+                <span class="layui-badge">正在维保</span>
+            {{# } else if(d.status === 2){ }}
+                <span class="layui-badge">正在维保</span>
+            {{# } else if(d.status === 3){ }}
+                <span class="layui-badge layui-bg-orange">等待报表</span>
+            {{# } else if(d.status === 4){ }}
+                <span class="layui-badge layui-bg-orange">等待客户确认</span>
+            {{# } }}
+    </script>
     <script src="__STATIC__/js/admin.js"></script>
     <script src="__TMPL__/public/assets/layui/layui.js"></script>
     <script>
@@ -86,7 +99,8 @@
                     , { field: 'lift_model', title: '电梯型号', event: 'edit' }
                     , { field: 'user_nickname', title: '分配员工', event: 'edit' }
                     , { field: 'next_date', sort: true, title: '下次保养日期', event: 'edit' }
-                    , { field: 'gap', title: '保养间隔', templet: '#gap', event: 'edit' }
+                    //, { field: 'gap', title: '保养间隔', templet: '#gap', event: 'edit' }
+                    , { field: 'status', title: '状态', event: 'edit', templet: '#status' }
                     , { field: 'create_time', title: '创建时间', event: 'edit' }
                     , { title: '操作', toolbar: '#toolbar' }
                 ]]

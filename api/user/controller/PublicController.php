@@ -13,6 +13,8 @@ use think\Validate;
 use think\Request;
 use cmf\controller\RestBaseController;
 use api\user\model\UserModel;
+use api\user\model\WorkModel;
+use api\user\model\LiftModel;
 
 class PublicController extends RestBaseController
 {
@@ -172,6 +174,27 @@ class PublicController extends RestBaseController
             $header = $this->request->header();
             $userData['avatar'] = "https://".$header['host']."/static/images/headimg.jpg";
         }
+        $today = strtotime(date('Y-m-d'));
+        $time = strtotime('+3 days ',$today);
+        $time_1day_after = date('Y-m-d',$time);
+
+        $contract = Db::name('contract')->where('customer_id',$userId)->select();
+        $contractNum = count($contract);
+        $userData['contract_num'] = $contractNum;
+
+        $work = Db::name('work')->where('customer_id',$userId)->where('status',0)->select();
+        $workNum = count($work);
+        $userData['work_num'] = $workNum;
+
+        $liftModel = new LiftModel;
+        $lift = $liftModel::hasWhere('contract',['customer_id'=>$userId])->select();
+        $liftNumCustomer = count($lift);
+        $userData['lift_num_customer'] = $liftNumCustomer;
+
+        $liftData = Db::name('lift')->where('worker_id',$userId)->where('next_date' ,'<= time',$time_1day_after)->select();
+        $liftNum = count($liftData);
+        $userData['lift_num'] = $liftNum;
+
         $this->success("获取成功", $userData);
     }
 

@@ -1,6 +1,6 @@
 <?php
 // +----------------------------------------------------------------------
-// | 文件说明：用户表关联model 
+// | 文件说明：用户表关联model
 // +----------------------------------------------------------------------
 // | Copyright (c) 2017 http://www.thinkcmf.com All rights reserved.
 // +----------------------------------------------------------------------
@@ -16,15 +16,20 @@ use think\Model;
 
 class UserModel extends Model
 {
+
     protected $type = [
         'more' => 'array',
     ];
 
     public function role()
     {
-        return $this->belongsTo('RoleUserModel','id','user_id')->bind('name,role_id');
+        return $this->belongsTo('RoleUserModel', 'id', 'user_id')->bind('name,role_id');
     }
 
+    public function work()
+    {
+        return $this->hasMany('WorkModel', 'customer_id', 'id');
+    }
 
     /**
      * avatar 自动转化

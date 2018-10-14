@@ -154,6 +154,7 @@ class ProfileController extends RestUserBaseController
                 } else {
                     $userData = Db::name("user")->where('id', $userId)->value($mixedField);
                 }
+                
             }
             $this->success('获取成功！', $userData);
         }

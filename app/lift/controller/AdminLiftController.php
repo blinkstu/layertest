@@ -94,7 +94,7 @@ class AdminLiftController extends AdminBaseController
                 'map_lat' => $_POST['addLat'],
                 'map_address' => $_POST['address_name'],
                 'last_date' => '',
-                'gap' => $_POST['gap'],
+                //'gap' => $_POST['gap'],
                 'next_date' => $_POST['next_date'],
                 'create_time' => date("Y-m-d H:i:s"),
             ];
@@ -166,13 +166,14 @@ class AdminLiftController extends AdminBaseController
             } else {
                 $edit_log = json_decode($lift['edit_log'], true);
             }
-            if ($_POST['gap'] != $lift['gap'] || $_POST['next_date'] != $lift['next_date']) {
+            //if ($_POST['gap'] != $lift['gap'] || $_POST['next_date'] != $lift['next_date']) {
+            if ($_POST['next_date'] != $lift['next_date']) {
                 if (strtotime($params['next_date']) < strtotime(date('Y-m-d'))) {
                     $this->error('下次保养时间应该大于今天');
                 }
-                if ($_POST['gap'] != $lift['gap']) {
+                /* if ($_POST['gap'] != $lift['gap']) {
                     $edit_log[] = ['date' => date("Y-m-d H:i:s"), 'log' => '间隔由' . $lift['gap'] . '个月修改为' . $_POST['gap'] . '个月'];
-                }
+                } */
                 if ($_POST['next_date'] != $lift['next_date']) {
                     $edit_log[] = ['date' => date("Y-m-d H:i:s"), 'log' => '下次保养日期由' . $lift['next_date'] . '修改为' . $_POST['next_date']];
                 }
@@ -189,7 +190,7 @@ class AdminLiftController extends AdminBaseController
                 'map_lat' => $_POST['addLat'],
                 'map_address' => $_POST['address_name'],
                 'last_date' => '',
-                'gap' => $_POST['gap'],
+                //'gap' => $_POST['gap'],
                 'next_date' => $_POST['next_date'],
                 'update_time' => date("Y-m-d H:i:s"),
                 'edit_log' => $edit_log_json,

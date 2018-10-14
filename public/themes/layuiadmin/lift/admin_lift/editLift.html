@@ -20,9 +20,9 @@
         <input type="hidden" name="contract_id" value="{$Request.param.contract_id}">
         <div class="layui-card">
             <div class="layui-card-header">任务记录
-                <div class="layui-layout-right" style="margin-right:20px;">
+                <!---div class="layui-layout-right" style="margin-right:20px;">
                     <a class="layui-btn layui-btn-xs layui-btn-normal add_repair">添加紧急维修任务</a>
-                </div>
+                </div--->
             </div>
             <div class="layui-card-body">
                 <table id="LAY-app-content-list" class="layui-anim layui-anim-up" lay-filter="LAY-app-content-list"></table>
@@ -41,8 +41,8 @@
                 </p>
                 <ul class="worker-list" style="display: none;">
                     <volist name="staffs" id="vo">
-                        <li class="layui-anim layui-anim-scale" nickname="{$vo.user_nickname}" id="{$vo.id}" desc="{$vo.description}" userlogin="{$vo.user_login}"
-                            tel="{$vo.mobile}">
+                        <li class="layui-anim layui-anim-scale" nickname="{$vo.user_nickname}" id="{$vo.id}" desc="{$vo.description}"
+                            userlogin="{$vo.user_login}" tel="{$vo.mobile}">
                             <svg class="icon" aria-hidden="true">
                                 <use xlink:href="#icon-nanxing"></use>
                             </svg>
@@ -81,12 +81,12 @@
                         <div class="layui-form-item">
                             <label class="layui-form-label">下次保养</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="next_date" disabled=true value="{$lift.next_date}" class="layui-input" id="test-laydate-normal-cn"
-                                    placeholder="yyyy-MM-dd" lay-key="1">
+                                <input type="text" name="next_date" disabled=true value="{$lift.next_date}" class="layui-input"
+                                    id="test-laydate-normal-cn" placeholder="yyyy-MM-dd" lay-key="1">
                             </div>
                         </div>
                     </div>
-                    <div class="layui-col-xs6">
+                    <!---div class="layui-col-xs6">
                         <div class="layui-form-item">
                             <label class="layui-form-label">保养间隔</label>
                             <div class="layui-input-inline">
@@ -101,7 +101,7 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div--->
                 </div>
                 <notempty name="edit_log">
                     <table class="layui-table edit-log" style="display:none" lay-even lay-skin="line" lay-size="sm">
@@ -137,29 +137,29 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">电梯编号</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_id" value="{$lift.lift_id}" required lay-verify="required" placeholder="电梯编号" autocomplete="off"
-                            class="layui-input">
+                        <input type="text" name="lift_id" value="{$lift.lift_id}" required lay-verify="required"
+                            placeholder="电梯编号" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">电梯型号</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_model" value="{$lift.lift_model}" required lay-verify="required" placeholder="电梯型号" autocomplete="off"
-                            class="layui-input">
+                        <input type="text" name="lift_model" value="{$lift.lift_model}" required lay-verify="required"
+                            placeholder="电梯型号" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">使用单位</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_belongs" value="{$lift.lift_belongs}" required lay-verify="required" placeholder="使用单位" autocomplete="off"
-                            class="layui-input">
+                        <input type="text" name="lift_belongs" value="{$lift.lift_belongs}" required lay-verify="required"
+                            placeholder="使用单位" autocomplete="off" class="layui-input">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">电梯备注</label>
                     <div class="layui-input-inline">
-                        <input type="text" name="lift_desc" value="{$lift.lift_desc}" required lay-verify="required" placeholder="备注" autocomplete="off"
-                            class="layui-input">
+                        <input type="text" name="lift_desc" value="{$lift.lift_desc}" required lay-verify="required"
+                            placeholder="备注" autocomplete="off" class="layui-input">
                     </div>
                 </div>
             </div>
@@ -181,8 +181,8 @@
                     <div class="layui-input-inline" style="width:60%">
                         <input type="hidden" name="addLng" value="{$lift.map_lng}" id="add_lng">
                         <input type="hidden" name="addLat" value="{$lift.map_lat}" id="add_lat">
-                        <input type="text" class="layui-input" value="{$lift.map_address}" id="address_name" name="address_name" required lay-verify="required"
-                            placeholder="请输入标题" disabled autocomplete="off">
+                        <input type="text" class="layui-input" value="{$lift.map_address}" id="address_name" name="address_name"
+                            required lay-verify="required" placeholder="请输入标题" disabled autocomplete="off">
                     </div>
                     <div class="layui-form-mid layui-word-aux">
 
@@ -191,8 +191,10 @@
             </div>
         </div>
         <div class="layui-form-item layui-hide">
-            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="确认添加">
-            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit" value="确认编辑">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit"
+                value="确认添加">
+            <input type="button" lay-submit="" lay-filter="layuiadmin-app-form-edit" id="layuiadmin-app-form-edit"
+                value="确认编辑">
         </div>
     </form>
     <script src="__STATIC__/js/admin.js"></script>
@@ -211,8 +213,11 @@
         function status(status){
             status = parseInt(status);
             switch(status){
+                case 0:
+                    return '<span class="layui-badge layui-bg-danger">客户待确认</span>';
+                    break;
                 case 1:
-                    return '<span class="layui-badge layui-bg-green">已完成</span>';
+                    return '<span class="layui-badge layui-bg-green">客户已确认</span>';
                     break;
                 case 2:
                     return '<span class="layui-badge layui-bg-blue">下次维保</span>';
@@ -247,7 +252,7 @@
             }}
             {{ type(d.type) }}
     </script>
-    <script type="text/html" id="work_time" >
+    <script type="text/html" id="work_time">
         {{# 
         var current_time = new Date().getTime();
         var work_time = new Date(d.work_time);
@@ -280,10 +285,10 @@
                 , cols: [[ //表头
                     { field: 'user_nickname', title: '员工姓名', width: 140 }
                     , { field: 'type', title: '类型', templet: '#type' }
-                    , { field: 'work_time', title: '日期', templet: '#work_time' ,width: 110, sort: true }
-                    , { field: 'note', title: '备注', width:110 }
+                    , { field: 'work_time', title: '日期', templet: '#work_time', width: 110, sort: true }
+                    , { field: 'note', title: '备注', width: 110 }
                     , { field: 'status', title: '状态', templet: '#status' }
-                    , { title: '操作', toolbar: '#toolbar',width: 80 }
+                    , { title: '操作', toolbar: '#toolbar', width: 80 }
                 ]]
             });
 
@@ -350,7 +355,7 @@
                             });
                         }
                     });
-                } else if(layEvent == 'done') {
+                } else if (layEvent == 'done') {
                     layer.confirm('确定要修改 ' + data.user_nickname + ' 的任务为已完成吗？', {
                         btn: ['确定', '取消'],
                         yes: function () {
@@ -369,21 +374,21 @@
                             });
                         }
                     });
-                } else if (layEvent == 'edit'){
+                } else if (layEvent == 'edit') {
                     parent.layer.open({
-                    type: 2
-                    , title: '任务详情'
-                    , content: '/lift/admin_lift/liftWorkEdit.html?id='+ data.id + '&fid=' + fid
-                    , maxmin: false
-                    , area: ['500px', '500px']
-                    , btn: false
-                    , cancel: function (index, layero) {
+                        type: 2
+                        , title: '任务详情'
+                        , content: '/lift/admin_lift/liftWorkEdit.html?id=' + data.id + '&fid=' + fid
+                        , maxmin: false
+                        , area: ['500px', '500px']
+                        , btn: false
+                        , cancel: function (index, layero) {
                             layui.table.reload('LAY-app-content-list');
                         }
-                });
+                    });
                 }
             });
-            
+
 
             $('.show_log').on('click', function () {
                 if ($(this).html() == '隐藏修改记录') {
