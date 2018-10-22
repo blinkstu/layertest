@@ -51,7 +51,8 @@ class SettingController extends AdminBaseController
         $options = $this->request->param('options/a');
 
         $validate = new Validate([
-            'lift_distence' => 'number|between:500,10000',
+            //'lift_distence' => 'number|between:500,10000',
+            'lift_distence' => 'number',
             'lift_early' => 'number|between:1,3',
             'lift_late'  => 'number|between:1,3'
         ]);
@@ -67,7 +68,7 @@ class SettingController extends AdminBaseController
         }
 
 
-        cmf_set_option('lift_settings', $options);
+        cmf_set_option('lift_settings', $options, true);
         $this->success("保存成功！", '');
     }
 

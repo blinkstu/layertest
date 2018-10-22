@@ -22,14 +22,18 @@ class AdminPaymentController extends AdminBaseController
     public function contractPaymentFetchData()
     {
         $params = $this->request->param();
+        $request = input('request.');
+        $page = $request['page'];
+        $limit = $request['limit'];
         $id = $params['contract_id'];
 
         $payment = new PaymentModel;
-        $data = $payment->where('contractId=' . $id)->order('payTime','desc')->select();
+        $count = $payment->where('contractId=' . $id)->order('payTime', 'desc')->select();
+        $data = $payment->where('contractId=' . $id)->order('payTime','desc')->page($page.','.$limit)->select();
         $result = [
             'code' => 0,
             'msg' => '',
-            'count' => count($data),
+            'count' => count($count),
             'data' => $data,
         ];
         return json($result);

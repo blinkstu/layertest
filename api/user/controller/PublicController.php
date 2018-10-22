@@ -195,6 +195,10 @@ class PublicController extends RestBaseController
         $liftNum = count($liftData);
         $userData['lift_num'] = $liftNum;
 
+        $notyData = Db::name('noty')->where('user_id',$userId)->where('status',1)->select();
+        $notyNum = count($notyData);
+        $userData['noty_num'] = $notyNum;
+
         $this->success("获取成功", $userData);
     }
 
@@ -284,6 +288,9 @@ class PublicController extends RestBaseController
 
     public function wechatLogin(){
         $params = $this->request->param();
+        $lift_settings = cmf_get_option('lift_settings');
+        $secret = $lift_settings['secret'];
+        $appId = $lift_settings['appId'];
 
         $validate = new Validate([
             'code'           => 'require',
@@ -301,8 +308,8 @@ class PublicController extends RestBaseController
         $currentTime = time();
         $ip          = $this->request->ip(0, true);
         $code = $params['code'];
-        $secret = 'ab6f9d92ef6be3c8c44ccc6dcb5dd983';
-        $appId = 'wx863684d4865e70f9';
+        //$secret = 'ab6f9d92ef6be3c8c44ccc6dcb5dd983';
+        //$appId = 'wx863684d4865e70f9';
 
         $response = cmf_curl_get("https://api.weixin.qq.com/sns/oauth2/access_token?appid=$appId&secret=$secret&code=$code&grant_type=authorization_code");
         $response = json_decode($response, true);

@@ -31,17 +31,15 @@
                 , url: '/contract/admin_contract/fetchContractData' //数据接口
                 , page: true //开启分页
                 , cols: [[ //表头
-                    { field: 'contract_id', title: '订单编号', sort: true, fixed: 'left', width: 100 ,event: 'edit' }
-                    , { field: 'contract_name', title: '订单名称', width: 140 ,event: 'edit'}
-                    , { field: 'user_nickname', title: '客户账号', templet: '#customer',event: 'edit' }
-                    , { field: 'total_amount', title: '总金额', templet: '#totalAmount',event: 'edit' }
-                    , { field: 'start_date', title: '开始时间', width: 110, sort: true,event: 'edit' }
-                    , { field: 'end_date', title: '到期时间', width: 110, sort: true,event: 'edit' }
-                    , { field: 'type', title: '类型', templet: '#typeTpl',event: 'edit' }
-                    , { field: 'a_name', title: '甲方',event: 'edit' }
-                    , { field: 'b_name', title: '乙方' ,event: 'edit'}
-                    , { field: 'notes', title: '备注' ,event: 'edit'}
-                    , { field: 'status', title: '状态', width: 80, templet: '#statusTpl',event: 'edit' }
+                    { field: 'contract_id', title: '订单编号', sort: true, fixed: 'left', width: 100, event: 'edit' }
+                    , { field: 'contract_name', title: '订单名称', width: 140, event: 'edit' }
+                    , { field: 'user_nickname', title: '客户账号', templet: '#customer', event: 'edit' }
+                    , { field: 'total_amount', title: '总金额', templet: '#totalAmount', event: 'edit' }
+                    , { field: 'start_date', title: '开始时间', width: 110, sort: true, event: 'edit' }
+                    , { field: 'end_date', title: '到期时间', width: 110, sort: true, event: 'edit' }
+                    , { field: 'a_name', title: '甲方', event: 'edit' }
+                    , { field: 'notes', title: '备注', event: 'edit' }
+                    , { field: 'status', title: '状态', width: 80, templet: '#statusTpl', event: 'edit' }
                     , { title: '操作', align: 'center', toolbar: '#toolbar' }
                 ]]
             });

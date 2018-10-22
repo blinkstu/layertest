@@ -26,14 +26,18 @@ class AdminReplacementController extends AdminBaseController
     public function replacementFetch()
     {
         $params = $this->request->param();
+        $request = input('request.');
+        $page = $request['page'];
+        $limit = $request['limit'];
         $id = $params['contract_id'];
 
         $payment = new ReplacementModel;
-        $data = $payment->where('contract_id=' . $id)->order('create_time', 'desc')->select();
+        $count = $payment->where('contract_id=' . $id)->order('create_time', 'desc')->select();
+        $data = $payment->where('contract_id=' . $id)->order('create_time', 'desc')->page($page.','.$limit)->select();
         $result = [
             'code' => 0,
             'msg' => '',
-            'count' => count($data),
+            'count' => count($count),
             'data' => $data,
         ];
         return json($result);

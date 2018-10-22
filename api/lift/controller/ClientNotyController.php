@@ -38,4 +38,20 @@ class ClientNotyController extends RestUserBaseController
             $this->success('good', $noty);
         }
     }
+
+    public function clickNoty(){
+        $params = $this->request->param();
+        if(empty($params['type']) || empty($params['id']) || empty($params['oid'])){
+            $this->error('缺少参数');
+        }
+        $type = $params['type'];
+        $id = $params['id'];
+        $oid = $params['oid'];
+        $notyModel = new NotyModel;
+        $noty = $notyModel->update([
+            'id' => $id,
+            'status'   => 2 
+        ]);
+        $this->success('good');
+    }
 }

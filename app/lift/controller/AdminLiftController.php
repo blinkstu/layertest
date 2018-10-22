@@ -35,14 +35,18 @@ class AdminLiftController extends AdminBaseController
     public function contractLiftFetchData()
     {
         $params = $this->request->param();
+        $request = input('request.');
+        $page = $request['page'];
+        $limit = $request['limit'];
         $contract_id = $params['contract_id'];
 
         $liftModel = new LiftModel();
-        $data = $liftModel->with('worker')->where('contract_id=' . $contract_id)->order('create_time', 'desc')->select();
+        $count = $liftModel->with('worker')->where('contract_id=' . $contract_id)->order('create_time', 'desc')->select();
+        $data = $liftModel->with('worker')->where('contract_id=' . $contract_id)->order('create_time', 'desc')->page($page.','.$limit)->select();
         $result = [
             'code' => 0,
             'msg' => '',
-            'count' => count($data),
+            'count' => count($count),
             'data' => $data,
         ];
         

@@ -177,8 +177,120 @@ class RuntimeController extends RestBaseController
         return $this->success('good');
     }
 
+    /**
+     * 发送post请求
+     * @param string $url
+     * @param string $param
+     * @return bool|mixed
+     */
+    private function requestPost($url = '', $param = '')
+    {
+        if (empty($url) || empty($param)) {
+            return false;
+        }
+        $postUrl = $url;
+        $curlPost = $param;
+        $ch = curl_init(); //初始化curl
+        curl_setopt($ch, CURLOPT_URL, $postUrl); //抓取指定网页
+        curl_setopt($ch, CURLOPT_HEADER, 0); //设置header
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //要求结果为字符串且输出到屏幕上
+        curl_setopt($ch, CURLOPT_POST, 1); //post提交方式
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $curlPost);
+        $data = curl_exec($ch); //运行curl
+        curl_close($ch);
+        return $data;
+    }
 
-    private function send_noty($content){
-        $response = cmf_curl_get("http://127.0.0.1:2121/?type=publish&to=1&content={%22code%22:1,%22msg%22:%22$content%22}");
+    /**
+     * 微信消息模板API
+     * @param string $openid
+     * @param string $template_id
+     * @param string $url
+     * @param $data
+     * @param string $topcolor
+     * return bool
+    */
+    private function doWechatNoty($touser, $template_id, $url, $data, $topcolor = '#7B68EE'){
+        $lift_settings = cmf_get_option('lift_settings');
+        $appId = $lift_settings['appId'];
+        $secret = $lift_settings['secret'];
+        $url1 = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$appId&secret=$secret";
+        $response = cmf_curl_get($url1);
+        $response = json_decode($response, true);
+        if (empty($response['access_token'])) {
+            $this->error('操作失败');
+        }
+        $accessToken = $response['access_token'];
+        $template = array(
+            'touser' => $touser,
+            'template_id' => $template_id,
+            'url' => $url,
+            'topcolor' => $topcolor,
+            'data' => $data
+        );
+        $json_template = json_encode($template);
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $accessToken;
+        $dataRes = $this->requestPost($url, urldecode($json_template));
+        $dataRes = json_decode($dataRes, true);
+        if ($dataRes['errcode'] == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 发送通知（主控）
+     * @param int $type
+     * @param int $id
+     * @param int $userId
+     * @param int $days
+     * @param bool $callBackend
+     */
+    private function doNoty($type,$id,$userId,$days,$time,$callBackend){
+        //制作content
+        switch($type){
+            case 1:
+                if($days > 0){
+                    $content = '您有一个电梯维保还有' . $days . '到期';
+                } else if($days == 0){
+                    $content = '您有一个电梯维保今天到期';
+                } else if($days < 0){
+                    $days = -$days;
+                    $content = '您有一个电梯维保已经过期'. $days .'天';
+                }
+                break;
+            case 2:
+                break;
+            default:
+        }
+
+        //记录到数据库
+        if($type == 1){
+            $notyModel = new NotyModel();
+            $notyModel->insert([
+                'lift_id' => $id,
+                'user_id' => $userId,
+                'type' => 1,
+                'status' => 1,
+                'text' => $content,
+                'create_time' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        //发送socket给用户
+        $this->send_noty($content, $userId);
+        
+
+        
+        
+    }
+
+    /**
+     * 发送到WORKERMAN
+     * @param string $content
+     */
+    private function send_noty($content,$id){
+        $response = cmf_curl_get("http://127.0.0.1:2121/?type=publish&to=$id&content={%22code%22:1,%22msg%22:%22$content%22}");
     }
 }

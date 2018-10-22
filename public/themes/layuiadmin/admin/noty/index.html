@@ -1,0 +1,94 @@
+<include file="public@header" />
+<hook name="admin_before_head_end" />
+<link rel="stylesheet" href="__STATIC__/js/noty.css">
+<link rel="stylesheet" href="__STATIC__/js/themes/mint.css">
+</head>
+
+<body style='background: #f2f2f2'>
+
+    <div class="layui-fluid">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                消息中心
+            </div>
+            <div class="layui-card-body">
+                <div class="LAY-app-message-btns" style="margin-bottom: 20px;">
+                    <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="del">删除</button>
+                    <button class="layui-btn layui-btn-primary layui-btn-sm" data-type="all" data-events="ready">标记已读</button>
+                </div>
+
+                <table id="LAY-app-message-all" lay-filter="LAY-app-message-all"></table>
+            </div>
+        </div>
+    </div>
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script src="__STATIC__/js/string.js"></script>
+    <script type="text/html" id="toolbar">
+        <button type="text/html" class="layui-btn layui-btn-primary layui-btn-xs" lay-event="open">查看</button>
+    </script>
+    <script type="text/html" id="status">
+            {{# if(d.status === "1"){ }}
+                <b>未读</b>
+            {{# } else { }}
+                <span style="color:#999">已读</span>
+            {{# } }}
+    </script>
+    <script type="text/html" id="title">
+            {{# if(d.status === "1"){ }}
+                <b>{{d.text}}</b>
+            {{# } else { }}
+                <span style="color:#999">{{ d.text }}</span>
+            {{# } }}
+    </script>
+    <script>
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index'
+        }).use(['index', 'table', 'layer', 'message'], function () {
+            var t = layui.$
+            var fid = self.frameElement.getAttribute('__idm_frm__');
+            layui.table.on('tool(LAY-app-message-all)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'open') {
+                    if (data.type == 1) {
+                        if (data.contract_id == null) {
+                            layer.msg("目标已不存在");
+                        } else {
+                            openContract(fid, data.contract_id);
+                        }
+                    }
+                }
+            });
+
+            function openContract(fid, contract_id) {
+                parent.layer.open({
+                    type: 2
+                    , title: '管理合同 '
+                    , content: '/lift/admin_lift/index.html?fid=' + fid + '&contract_id=' + contract_id
+                    , maxmin: true
+                    , shade: 0
+                    , anim: 5
+                    , area: ['90%', '90%']
+                    , btn: ['关闭']
+                    , yes: function (index, layero) {
+                        parent.layer.close(index);
+                        layui.table.reload('LAY-app-content-list');
+                    }
+                    , cancel: function (index, layero) {
+                        layui.table.reload('LAY-app-content-list');
+                    }
+                });
+            }
+
+
+        })
+    </script>
+
+
+</body>
+
+</html>
