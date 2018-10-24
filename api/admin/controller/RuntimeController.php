@@ -116,6 +116,8 @@ class RuntimeController extends RestBaseController
 
             if($day_lefts == 0 || $day_lefts < 0){
                 $callBackend = true;
+            }else{
+                $callBackend == false;
             }
 
             $address = $vo['map_address'];
