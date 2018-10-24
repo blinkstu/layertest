@@ -47,11 +47,16 @@ class ClientNotyController extends RestUserBaseController
         $type = $params['type'];
         $id = $params['id'];
         $oid = $params['oid'];
-        $notyModel = new NotyModel;
-        $noty = $notyModel->update([
-            'id' => $id,
-            'status'   => 2 
-        ]);
+        if($id != 0){
+            $notyModel = new NotyModel;
+            $noty = $notyModel->update([
+                'id' => $id,
+                'status' => 2
+            ]);
+        }else{
+            $this->error('测试信息'); 
+        }
+
         $this->success('good');
     }
 }

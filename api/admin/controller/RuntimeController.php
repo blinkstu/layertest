@@ -246,7 +246,7 @@ class RuntimeController extends RestBaseController
         if($result == 'good'){
             $this->success('通知成功');
         }else {
-            $this->error($result);
+            $this->error('错误',$result);
         }
 
     }
