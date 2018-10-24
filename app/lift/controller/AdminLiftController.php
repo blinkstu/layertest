@@ -29,7 +29,7 @@ class AdminLiftController extends AdminBaseController
         $userModel = new UserModel();
         $staffs = $userModel::hasWhere('role', ['role_id' => '4'])->with('role.roleinfo,desc,gotLifts')->select();
         $this->assign('staffs', $staffs);
-        return $this->fetch('addLIft');
+        return $this->fetch('addLift');
     }
 
     public function contractLiftFetchData()
