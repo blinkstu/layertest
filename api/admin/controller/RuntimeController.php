@@ -263,7 +263,7 @@ class RuntimeController extends RestBaseController
      * @param string $content
      * @param bool $callBackend
      */
-    private function doNoty($type,$id,$userId,$days,$time,$content,$callBackend,$address=''){
+    private function doNoty($type,$id,$userId,$days,$time,$content,$callBackend = false,$address=''){
 
         //通知后台
         if ($callBackend) {
