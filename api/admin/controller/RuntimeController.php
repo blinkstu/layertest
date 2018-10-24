@@ -263,7 +263,7 @@ class RuntimeController extends RestBaseController
      * @param string $content
      * @param bool $callBackend
      */
-    private function doNoty($type,$id,$userId,$days,$time,$content,$callBackend=false,$address=''){
+    private function doNoty($type,$id,$userId,$days,$time,$content,$callBackend,$address=''){
 
         //通知后台
         if ($callBackend) {
@@ -283,16 +283,20 @@ class RuntimeController extends RestBaseController
                     $content = $content;
                 default:
             }
-            $notyModel = new NotyModel();
-            $notyModel->insert([
-                'lift_id' => $id,
-                'user_id' => 1,
-                'type' => $type,
-                'status' => 1,
-                'text' => $content,
-                'create_time' => date('Y-m-d H:i:s')
-            ]);
-            $this->send_noty($content, 1);
+            
+            if($days <= 0){
+                $notyModel = new NotyModel();
+                $notyModel->insert([
+                    'lift_id' => $id,
+                    'user_id' => 1,
+                    'type' => 3,
+                    'status' => 1,
+                    'text' => $content,
+                    'create_time' => date('Y-m-d H:i:s')
+                ]);
+                $this->send_noty($content, 1);
+            }
+
         }
 
         //制作content
