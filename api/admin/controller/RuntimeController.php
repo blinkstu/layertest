@@ -331,7 +331,7 @@ class RuntimeController extends RestBaseController
             //APP通知
 
             try {
-                $client = new JPush("b28f67d60b0df4ac05a997cc", "a687eba8d0359a780c113465");
+                $client = new JPush("b28f67d60b0df4ac05a997cc", "a687eba8d0359a780c113465", null);
                 $client->push()
                     ->setPlatform('all')
                     ->addAlias([(string)$userId])
@@ -407,7 +407,7 @@ class RuntimeController extends RestBaseController
 
             //APP通知
             try {
-                $client = new JPush("b28f67d60b0df4ac05a997cc", "a687eba8d0359a780c113465");
+                $client = new JPush("b28f67d60b0df4ac05a997cc", "a687eba8d0359a780c113465", null);
                 $client->push()
                     ->setPlatform('all')
                     ->addAlias([(string)$userId])
