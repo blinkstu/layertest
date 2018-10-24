@@ -41,7 +41,7 @@ class ClientNotyController extends RestUserBaseController
 
     public function clickNoty(){
         $params = $this->request->param();
-        if(empty($params['type']) || empty($params['id']) || empty($params['oid'])){
+        if(empty($params['type']) || empty($params['id']) ){
             $this->error('缺少参数');
         }
         $type = $params['type'];
