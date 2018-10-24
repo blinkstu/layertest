@@ -19,8 +19,8 @@ class NotyController extends AdminBaseController
         $that = $this;
         $id = 1;
         //$data = Db::name('noty')->where('user_id', $id)->select();
-        $count = Db::name('noty')->select();
-        $data = Db::name('noty')->page($page . ',' . $limit)->order('create_time desc')->select()->toArray();
+        $count = Db::name('noty')->where('user_id',1)->select();
+        $data = Db::name('noty')->where('user_id', 1)->page($page . ',' . $limit)->order('create_time desc')->select()->toArray();
         foreach($data as $key => $item ){
             if ($item['type'] == 1) {
                 $lift = Db::name('lift')->where('id', $item['lift_id'])->find();

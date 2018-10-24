@@ -12,11 +12,32 @@
                     <div class="layui-card-body">
                         <div class="connect-success layui-bg-green" style="display:none;">
                             <i class="layui-icon layui-icon-ok"></i>
-                            链接成功
+                            正常
                         </div>
                         <div class="connect-error layui-bg-red" style="display:none;">
                             <i class="layui-icon layui-icon-close"></i>
                             严重错误
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs4">
+                <div class="layui-card">
+                    <div class="layui-card-header">测试推送系统</div>
+                    <div class="layui-card-body">
+
+                        <div class="layui-form-item">
+                            <p>默认推送到测试账号worker3（密码ceshi123）</p>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户ID</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="user_id" name="user_id" required lay-verify="required"
+                                    placeholder="输入ID" autocomplete="off" value="33" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <button id="push" class="layui-btn layui-btn-danger layui-btn-fluid">发送通知</button>
                         </div>
                     </div>
                 </div>
@@ -37,13 +58,35 @@
         layui.use('carousel', function () {
             var socket = io(socket_uri);
             socket.on('connect', function () {
-                // $('.connect-success').show('fast');
-                // $('.connect-error').hide('fast');
+                $('.connect-success').show('fast');
+                $('.connect-error').hide('fast');
             });
             socket.on('connect_error', (error) => {
-                //$('.connect-error').show('fast');
-                // $('.connect-success').hide('fast');
+                $('.connect-error').show('fast');
+                $('.connect-success').hide('fast');
             });
+
+            $('#push').on('click', function () {
+                id = $('#user_id').val();
+                $(this).addClass('layui-btn-disabled');
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/admin/runtime/testNoty?id=' + id,
+                    success: function (data) {
+                        console.log(data);
+                        if (data.code == 1) {
+                            layui.layer.msg(data.msg);
+                            $('#push').removeClass('layui-btn-disabled');
+                        } else {
+                            layui.layer.msg(data.msg);
+                            $('#push').removeClass('layui-btn-disabled');
+                        }
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+            })
         });
     </script>
     <hook name="admin_before_body_end" />

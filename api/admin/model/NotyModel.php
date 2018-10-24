@@ -1,9 +1,9 @@
 <?php
 namespace api\admin\model;
 
-use think\model;
+use think\Model;
 
-class NotyModel extends model
+class NotyModel extends Model
 {
     
 }

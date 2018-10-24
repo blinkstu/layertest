@@ -39,6 +39,10 @@ class ComposerStaticInit929fb365b9981d29459d58f676689cf7
         array (
             'Qiniu\\' => 6,
         ),
+        'J' => 
+        array (
+            'JPush\\' => 6,
+        ),
         'F' => 
         array (
             'FontLib\\' => 8,
@@ -87,6 +91,10 @@ class ComposerStaticInit929fb365b9981d29459d58f676689cf7
         'Qiniu\\' => 
         array (
             0 => __DIR__ . '/..' . '/qiniu/php-sdk/src/Qiniu',
+        ),
+        'JPush\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/jpush/jpush/src/JPush',
         ),
         'FontLib\\' => 
         array (

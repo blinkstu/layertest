@@ -31,7 +31,8 @@
         "ezyang/htmlpurifier": "^4.9",
         "topthink/think-queue": "^1.1.4",
         "electrolinux/phpquery": "^0.9.6",
-        "symfony/var-dumper": "^4.1"
+        "symfony/var-dumper": "^4.1",
+        "jpush/jpush": "^3.6"
     },
     "extra": {
         "think-path":"simplewind/thinkphp"
