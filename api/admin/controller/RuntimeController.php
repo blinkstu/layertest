@@ -27,6 +27,7 @@ class RuntimeController extends RestBaseController
         $lift_settings = cmf_get_option('lift_settings');
         $lift_early = $lift_settings['lift_early'];
         $lift_late = $lift_settings['lift_late'];
+        $noty_time = $lift_settings['noty_time'];
         $WorkModel = new WorkModel();
         $liftModel = new LiftModel();
         $notyModel = new NotyModel();
@@ -39,48 +40,6 @@ class RuntimeController extends RestBaseController
             $next_date = strtotime($vo['next_date']);
             $next_data_text = $vo['next_date'];
 
-            /*** 
-            //检查是否过期
-            while ($currentDate > $next_date) {
-                $next_date_before = $next_date - $lift_early * 24 * 60 * 60;
-                $next_date_after = $next_date + $lift_late * 24 * 60 * 60;
-                //检查过期附近时间有没有维保过
-                $findWroks = $WorkModel
-                    ->where('create_time', 'between time', [$next_date_before, $next_date_after])
-                    ->where('type', 1)
-                    ->where('lift_id', $vo['lift_id'])
-                    ->where('lift_id', $worker_id)
-                    ->find();
-                if ($findWroks === null) {
-                    //没有的话直接做一条维保记录 说明过期没做
-                  $WorkModel->insert([
-                        'lift_id' => $lift_id,
-                        'worker_id' => $worker_id,
-                        'type' => 1,
-                        'status' => 3,
-                        'work_time' => date('Y-m-d', $next_date),
-                        'create_time' => date('Y-m-d H:i:s'),
-                    ]);
-                }
-                if ($gap == 0.5) {
-                    $next_date = strtotime(date('Y-m-d', strtotime('+15 days', $next_date)));
-                } else {
-                    $gap = floor($gap);
-                    $next_date = strtotime(date('Y-m-d', strtotime('+' . $gap . ' month', $next_date)));
-                }
-            }
-
-            //更新下电梯的下次维保时间
-            $next_date = date('Y-m-d', $next_date);
-            if ($next_date != $vo['next_date']) {
-                $liftModel->where('id', $lift_id)->update([
-                    'next_date' => $next_date,
-                    'update_time' => date('Y-m-d H:i:s'),
-                ]);
-            }
-            $next_date = strtotime($next_date);
-            */
-
             $day_lefts = floor(($next_date - $currentDate) / 86400);
             $last_noty = $notyModel->where('lift_id', $lift_id)->where('user_id', $worker_id)->order('create_time desc')->find();
             if ($last_noty == null) {
@@ -88,8 +47,7 @@ class RuntimeController extends RestBaseController
             } else {
                 $last_noty_time = strtotime($last_noty['create_time']);
             }
-
-            switch ($day_lefts) {
+             switch ($day_lefts) {
                 case 0:
                     $noty_gap = '-1 hours';
                     break;
@@ -113,19 +71,24 @@ class RuntimeController extends RestBaseController
             if($noty_gap == null){
                 continue;
             }
-
             if($day_lefts == 0 || $day_lefts < 0){
                 $callBackend = true;
             }else{
                 $callBackend == false;
             }
-
             $address = $vo['map_address'];
 
+            $currentHour = (int) date('H');
+            $startHour = (int) $noty_time;
+            $endHour = 22;
 
-            if ($last_noty_time === null || $last_noty_time < strtotime($noty_gap) && $noty_gap != null) {
-                $this->doNoty(1, $lift_id, $worker_id, $day_lefts, $next_data_text, '', $callBackend, $address);
+            if($currentHour < $startHour && $currentHour > $endHour)
+            {
+                if ($last_noty_time === null || $last_noty_time < strtotime($noty_gap) && $noty_gap != null) {
+                    $this->doNoty(1, $lift_id, $worker_id, $day_lefts, $next_data_text, '', $callBackend, $address);
+                }
             }
+
         }
         $this->success('good');
     }
