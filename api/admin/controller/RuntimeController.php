@@ -82,7 +82,7 @@ class RuntimeController extends RestBaseController
             $startHour = (int) $noty_time;
             $endHour = 22;
 
-            if($currentHour < $startHour && $currentHour > $endHour)
+            if($currentHour < $endHour && $currentHour > $startHour)
             {
                 if ($last_noty_time === null || $last_noty_time < strtotime($noty_gap) && $noty_gap != null) {
                     $this->doNoty(1, $lift_id, $worker_id, $day_lefts, $next_data_text, '', $callBackend, $address);
