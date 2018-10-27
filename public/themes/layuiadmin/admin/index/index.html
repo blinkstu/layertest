@@ -60,7 +60,7 @@
                         </a>
                     </li>
                     <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                        <a href="javascript:;" onclick="javascript:parent.openIframeLayer('/admin/Setting/clearcache.html','清理缓存',{});"
+                        <a href="javascript:;" onclick="javascript:layer.open({type:2,title:'清理缓存',area:['500px','300px'],content:'/admin/Setting/clearcache.html'});"
                             title="清理缓存">清理缓存
                             <i class="layui-icon layui-icon-template-1"></i>
                         </a>
@@ -262,6 +262,7 @@
             iframe.contentWindow.layui.table.reload('LAY-app-content-list');
             layer.close(index);
         }
+
         // 初始化io对象
         var socket = io(socket_uri);
         socket.on('connect', function () { socket.emit('login', 1); console.log('connected'); $('.connect-error').hide('fast'); });

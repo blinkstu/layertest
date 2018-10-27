@@ -33,11 +33,7 @@ class SettingController extends AdminBaseController
 {
 
     /**
-     * 电梯自定义信息
-     * 1.维保最多迟到几天（不能大于3天）
-     * 2.维保最多提前几天（不能大于3天）
-     * 3.默认本公司名称
-     * 4.员工距离电梯多远可以维保
+     * 网站总设置
      */
     public function liftSetting()
     {
@@ -47,6 +43,9 @@ class SettingController extends AdminBaseController
         return $this->fetch();
     }
 
+    /**
+     * 网站总设置Post
+     */
     public function liftSettingPost(){
         $options = $this->request->param('options/a');
 
@@ -66,8 +65,7 @@ class SettingController extends AdminBaseController
         if (!$validate->check($options)) {
             $this->error($validate->getError());
         }
-
-
+        cmf_clear_cache();
         cmf_set_option('lift_settings', $options, true);
         $this->success("保存成功！", '');
     }

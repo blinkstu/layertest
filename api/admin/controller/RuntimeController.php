@@ -14,6 +14,17 @@ use think\Cache;
 class RuntimeController extends RestBaseController
 {
     /**
+     * JS文件获取runtime服务器地址
+     */
+    public function getRuntimeServer(){
+        if($this->request->isPost()){
+            $lift_settings = cmf_get_option('lift_settings');
+            $runtimeServerUrl = $lift_settings['runtimeServerUrl'];
+            return $runtimeServerUrl;
+        }
+    }
+
+    /**
      * 此方法10分钟会被Runtime服务器执行一次
      * 1.检查所有电梯
      */
@@ -39,34 +50,16 @@ class RuntimeController extends RestBaseController
             $gap = $vo['gap'];
             $next_date = strtotime($vo['next_date']);
             $next_data_text = $vo['next_date'];
-
             $day_lefts = floor(($next_date - $currentDate) / 86400);
             $last_noty = $notyModel->where('lift_id', $lift_id)->where('user_id', $worker_id)->order('create_time desc')->find();
+            
             if ($last_noty == null) {
                 $last_noty_time = null;
             } else {
                 $last_noty_time = strtotime($last_noty['create_time']);
             }
-             switch ($day_lefts) {
-                case 0:
-                    $noty_gap = '-1 hours';
-                    break;
-                case $day_lefts < 0:
-                    $noty_gap = '-1 hours';
-                    break;
-                case 1:
-                    $noty_gap = '-1 day';
-                    break;
-                case 2:
-                    $noty_gap = '-2 days';
-                    break;
-                case 3:
-                    $noty_gap = '-3 days';
-                    break;
-                default:
-                    $noty_gap = null;
-                    break;
-            }
+
+            switch ($day_lefts) {case 0:$noty_gap = '-1 hours';break;case $day_lefts < 0:$noty_gap = '-1 hours';break;case 1:$noty_gap = '-1 day'; break; case 2: $noty_gap = '-2 days'; break; case 3: $noty_gap = '-3 days'; break; default: $noty_gap = null; break; }
 
             if($noty_gap == null){
                 continue;
@@ -85,7 +78,7 @@ class RuntimeController extends RestBaseController
             if($currentHour < $endHour && $currentHour > $startHour)
             {
                 if ($last_noty_time === null || $last_noty_time < strtotime($noty_gap) && $noty_gap != null) {
-                    $this->doNoty(1, $lift_id, $worker_id, $day_lefts, $next_data_text, '', $callBackend, $address);
+                    $this->createNoty(1, $lift_id, $worker_id, $day_lefts, $next_data_text, '', $callBackend, $address);
                 }
             }
 
@@ -93,6 +86,9 @@ class RuntimeController extends RestBaseController
         $this->success('good');
     }
 
+    /**
+     * 实时监控电梯系统，控制电梯状态
+     */
     public function checkLift(){
         $lift_settings  = cmf_get_option('lift_settings');
         $maintain_time = $lift_settings['maintain_time'];
@@ -115,13 +111,12 @@ class RuntimeController extends RestBaseController
                     }
                 }
             }
-
             // 启动队列中任意一个电梯
             if (!count($tasks) && count($lifts)){
                 $LiftModel->where('worker_id',$userId)->where('status',1)->update(['status'=>2,'maintain_end'=>strtotime('+ '.$maintain_time.' minutes')]);
             }
         }
-        return $this->success('good');
+        return $this->success('检查成功');
     }
 
     /**
@@ -148,58 +143,10 @@ class RuntimeController extends RestBaseController
         return $data;
     }
 
+
     /**
-     * 微信消息模板API
-     * @param string $openid
-     * @param string $template_id
-     * @param string $url
-     * @param $data
-     * @param string $topcolor
-     * return bool
-    */
-    private function doWechatNoty($user_id, $template_id, $url, $data, $topcolor = '#7B68EE'){
-        $user = Db::name('third_party_user')->where('user_id',$user_id)->find();
-        if($user == null){
-            return false;
-        }else{
-            $touser = $user['openid'];
-        }
-        $lift_settings = cmf_get_option('lift_settings');
-        $appId = $lift_settings['appId'];
-        $secret = $lift_settings['secret'];
-
-        if(!Cache::get('access_token')){
-            $url1 = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$appId&secret=$secret";
-            $response = cmf_curl_get($url1);
-            $response = json_decode($response, true);
-            if (empty($response['access_token'])) {
-            //$this->error('操作失败');
-                return false;
-            }
-            $accessToken = $response['access_token'];
-            Cache::set('access_token', $accessToken, 7000);
-        }else{
-            $accessToken = Cache::get('access_token');
-        }
-
-        $template = array(
-            'touser' => $touser,
-            'template_id' => $template_id,
-            'url' => $url,
-            'topcolor' => $topcolor,
-            'data' => $data
-        );
-        $json_template = json_encode($template);
-        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $accessToken;
-        $dataRes = $this->requestPost($url, urldecode($json_template));
-        $dataRes = json_decode($dataRes, true);
-        if ($dataRes['errcode'] == 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
+     * 后台主页测试推送系统
+     */
     public function testNoty(){
         $params = $this->request->param();
         $user_id = $params['id'];
@@ -207,17 +154,19 @@ class RuntimeController extends RestBaseController
         if($user == null){
             $this->error('错误的用户ID');
         }
-        $result = $this->doNoty(3,0,$user_id,0,'','测试内容',false,'');
+        $result = $this->createNoty(3, 0, $user_id, 0, '', '测试内容', false, '');
+        
         if($result == 'good'){
             $this->success('通知成功');
-        }else {
+        }else if($result['App'] != 1){
+            $this->error('当前用户不在线,但已经通知',$result);
+        }else{
             $this->error('错误',$result);
         }
-
     }
 
     /**
-     * 发送通知（主控）
+     * 创建通知内容
      * @param int $type 1:电梯 2:请求 3:普通提醒
      * @param int $id
      * @param int $userId
@@ -226,40 +175,11 @@ class RuntimeController extends RestBaseController
      * @param string $content
      * @param bool $callBackend
      */
-    private function doNoty($type,$id,$userId,$days,$time,$content,$callBackend = false,$address=''){
+    private function createNoty($type,$id,$userId,$days,$time,$content,$callBackend = false,$address=''){
 
         //通知后台
         if ($callBackend) {
-            $user = Db::name('user')->where('id', $userId)->find();
-            $user_nickname = $user['user_nickname'];
-            switch ($type) {
-                case 1:
-                    if ($days < 0) {
-                        $content = '工作人员'.$user_nickname . '有一个电梯维保过期' . -$days . '天';
-                    } else if ($days == 0) {
-                        $content = '工作人员' . $user_nickname . '有一个电梯维保今天到期';
-                    }
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    $content = $content;
-                default:
-            }
-            
-            if($days <= 0){
-                $notyModel = new NotyModel();
-                $notyModel->insert([
-                    'lift_id' => $id,
-                    'user_id' => 1,
-                    'type' => 3,
-                    'status' => 1,
-                    'text' => $content,
-                    'create_time' => date('Y-m-d H:i:s')
-                ]);
-                $this->send_noty($content, 1);
-            }
-
+            $this->callBackend($type, $id, $userId, $days, $time, $content);
         }
 
         //制作content
@@ -284,125 +204,218 @@ class RuntimeController extends RestBaseController
             default:
         }
 
-
         if($type == 1){
-            //记录到数据库
-            $notyModel = new NotyModel();
-            $notyModel->insert([
-                'lift_id' => $id,
-                'user_id' => $userId,
-                'type' => $type,
-                'status' => 1,
-                'text' => $content,
-                'create_time' => date('Y-m-d H:i:s')
-            ]);
-
-            //APP通知
-
-            try {
-                $client = new JPush("b28f67d60b0df4ac05a997cc", "a687eba8d0359a780c113465", null);
-                $client->push()
-                    ->setPlatform('all')
-                    ->addAlias([(string)$userId])
-                    ->androidNotification($content, [
-                        'extras' => [
-                            'type' => 1
-                        ]
-                    ])
-                    ->setNotificationAlert($content)
-                    ->send();
-            } catch (\JPush\Exceptions\APIConnectionException $e) {
-                //print $e;
-            } catch (\JPush\Exceptions\APIRequestException $e) {
-                //print $e;
-            }
-
-            //发送微信
-            $data = [
-                'end_date' => [
-                    "value" => $time,
-                    "color" => "#f74c31"
-                ],
-                'left' => [
-                    "value" => $left,
-                    "color" => "#000"
-                ],
-                'days' => [
-                    "value" => $days . '天',
-                    "color" => "#f74c31"
-                ],
-                'address' => [
-                    "value" => $address,
-                    "color" => "#f74c31"
-                ]
-            ];
-            $this->doWechatNoty($userId, 'tNeEiX_yEuJSzG_4tLlqrW2l_PmgEmrdvel5E_suKY0', 'https://vue.c6pu.com/Lift/Details/' . $id, $data);
-            //发送socket给用户
-            $this->send_noty($content, $userId);
+            $result = $this->doNoty1($id, $userId, $days, $time, $content, $address);
         }else if($type == 3){
-
-            $notyModel = new NotyModel();
-            $notyModel->insert([
-                'lift_id' => $id,
-                'user_id' => $userId,
-                'type' => $type,
-                'status' => 1,
-                'text' => $content,
-                'create_time' => date('Y-m-d H:i:s')
-            ]);
-
-                        //发送微信
-            $data = [
-                'end_date' => [
-                    "value" => '2018-00-00',
-                    "color" => "#f74c31"
-                ],
-                'left' => [
-                    "value" => '剩余时间',
-                    "color" => "#000"
-                ],
-                'days' => [
-                    "value" => '0天',
-                    "color" => "#f74c31"
-                ],
-                'address' => [
-                    "value" => '测试通知测试通知',
-                    "color" => "#f74c31"
-                ]
-            ];
-            $this->doWechatNoty($userId, 'tNeEiX_yEuJSzG_4tLlqrW2l_PmgEmrdvel5E_suKY0', 'https://vue.c6pu.com/Lift/Details/' . $id, $data);
-            //发送socket给用户
-            $this->send_noty($content, $userId);
-
-            //APP通知
-            try {
-                $client = new JPush("b28f67d60b0df4ac05a997cc", "a687eba8d0359a780c113465", null);
-                $client->push()
-                    ->setPlatform('all')
-                    ->addAlias([(string)$userId])
-                    ->androidNotification($content, [
-                        'extras' => [
-                            'type' => 1
-                        ]
-                    ])
-                    ->setNotificationAlert($content)
-                    ->send();
-            } catch (\JPush\Exceptions\APIConnectionException $e) {
-                return $e;
-            } catch (\JPush\Exceptions\APIRequestException $e) {
-                return $e;
-            }
-
-            return 'good';
+            $result = $this->doNoty3($id, $userId, $days, $time, $content, $address);
         }
 
+        return $result;
+    }
+
+
+    /**
+     * 通知后台
+     */
+    private function callBackend($type, $id, $userId, $days, $content){
+        $user = Db::name('user')->where('id', $userId)->find();
+        $user_nickname = $user['user_nickname'];
+        switch ($type) {
+            case 1:
+                if ($days < 0) {
+                    $content = '工作人员' . $user_nickname . '有一个电梯维保过期' . -$days . '天';
+                } else if ($days == 0) {
+                    $content = '工作人员' . $user_nickname . '有一个电梯维保今天到期';
+                }
+                break;
+            case 2:
+                break;
+            case 3:
+                $content = $content;
+            default:
+        }
+        if ($days <= 0) {
+            $notyModel = new NotyModel();
+            $notyModel->insert([
+                'lift_id' => $id,
+                'user_id' => 1,
+                'type' => 3,
+                'status' => 1,
+                'text' => $content,
+                'create_time' => date('Y-m-d H:i:s')
+            ]);
+            $this->send_noty($content, 1);
+        }
+    }
+
+    /**
+     * 类型一的通知
+     */
+    private function doNoty1($id, $userId, $days, $time, $content, $address){
+        $notyModel = new NotyModel();
+        $notyModel->insert([
+            'lift_id' => $id,
+            'user_id' => $userId,
+            'type' => 1,
+            'status' => 1,
+            'text' => $content,
+            'create_time' => date('Y-m-d H:i:s')
+        ]);
+        $data = [
+            'end_date' => [
+                "value" => $time,
+                "color" => "#f74c31"
+            ],
+            'left' => [
+                "value" => $left,
+                "color" => "#000"
+            ],
+            'days' => [
+                "value" => $days . '天',
+                "color" => "#f74c31"
+            ],
+            'address' => [
+                "value" => $address,
+                "color" => "#f74c31"
+            ]
+        ];
+        $resultWechat = $this->sendWechatNoty($userId, 'tNeEiX_yEuJSzG_4tLlqrW2l_PmgEmrdvel5E_suKY0', 'https://vue.c6pu.com/Lift/Details/' . $id, $data);
+        $resultApp = $this->sendAppNoty(1,$userId,$content);
+        $resultWeb = $this->sendWebNoty($content, $userId);
+        $data = [
+            'Wechat' => $resultWechat,
+            'App' => $resultApp,
+            'Web' => $resultWeb,
+        ];
+        return $data;
+    }
+
+    /**
+     * 类型三的通知
+     */
+    private function doNoty3($id, $userId, $days, $time, $content,$address){
+        $notyModel = new NotyModel();
+        $notyModel->insert([
+            'lift_id' => $id,
+            'user_id' => $userId,
+            'type' => 3,
+            'status' => 1,
+            'text' => $content,
+            'create_time' => date('Y-m-d H:i:s')
+        ]);
+        //发送微信
+        $data = [
+            'end_date' => [
+                "value" => '2018-00-00',
+                "color" => "#f74c31"
+            ],
+            'left' => [
+                "value" => '剩余时间',
+                "color" => "#000"
+            ],
+            'days' => [
+                "value" => '0天',
+                "color" => "#f74c31"
+            ],
+            'address' => [
+                "value" => '测试通知测试通知',
+                "color" => "#f74c31"
+            ]
+        ];
+        $resultWechat = $this->sendWechatNoty($userId, 'tNeEiX_yEuJSzG_4tLlqrW2l_PmgEmrdvel5E_suKY0', 'https://vue.c6pu.com/Lift/Details/' . $id, $data);
+        $resultApp = $this->sendAppNoty(3, $userId, $content);
+        $resultWeb = $this->sendWebNoty($content, $userId);
+        $data = [
+            'Wechat' => $resultWechat,
+            'App' => $resultApp,
+            'Web' => $resultWeb,
+        ];
+        return $data;
+    }
+    
+    /**
+     * APP通知
+     */
+    private function sendAppNoty($type, $user_id, $content){
+        try {
+            $client = new JPush("b28f67d60b0df4ac05a997cc", "a687eba8d0359a780c113465", null);
+            $client->push()
+                ->setPlatform('all')
+                ->addAlias([(string)$user_id])
+                ->androidNotification($content, [
+                    'extras' => [
+                        'type' => $type
+                    ]
+                ])
+                ->setNotificationAlert($content)
+                ->send();
+        } catch (\JPush\Exceptions\APIConnectionException $e) {
+            return 0;
+        } catch (\JPush\Exceptions\APIRequestException $e) {
+            return 0;
+        }
+        return 1;
+    }
+
+    /**
+     * 微信消息模板API
+     * @param string $openid
+     * @param string $template_id
+     * @param string $url
+     * @param $data
+     * @param string $topcolor
+     * return bool
+     */
+    private function sendWechatNoty($user_id, $template_id, $url, $data, $topcolor = '#7B68EE')
+    {
+        $user = Db::name('third_party_user')->where('user_id', $user_id)->find();
+        if ($user == null) {
+            return false;
+        } else {
+            $touser = $user['openid'];
+        }
+        $lift_settings = cmf_get_option('lift_settings');
+        $appId = $lift_settings['appId'];
+        $secret = $lift_settings['secret'];
+
+        if (!Cache::get('access_token')) {
+            $url1 = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$appId&secret=$secret";
+            $response = cmf_curl_get($url1);
+            $response = json_decode($response, true);
+            if (empty($response['access_token'])) {
+            //$this->error('操作失败');
+                return false;
+            }
+            $accessToken = $response['access_token'];
+            Cache::set('access_token', $accessToken, 7000);
+        } else {
+            $accessToken = Cache::get('access_token');
+        }
+
+        $template = array(
+            'touser' => $touser,
+            'template_id' => $template_id,
+            'url' => $url,
+            'topcolor' => $topcolor,
+            'data' => $data
+        );
+        $json_template = json_encode($template);
+        $url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" . $accessToken;
+        $dataRes = $this->requestPost($url, urldecode($json_template));
+        $dataRes = json_decode($dataRes, true);
+        if ($dataRes['errcode'] == 0) {
+            return $dataRes;
+        } else {
+            return $dataRes;
+        }
+        return 1;
     }
 
     /**
      * 发送到WORKERMAN
      * @param string $content
      */
-    private function send_noty($content,$id){
+    private function sendWebNoty($content,$id){
         $server = 'c6pu.com';
         //$server = '192.168.100.10';
         $data = [
@@ -411,6 +424,6 @@ class RuntimeController extends RestBaseController
         ];
         $data = json_encode($data);
         $response = cmf_curl_get('http://'.$server.':2121/?type=publish&to='.$id.'&content='.$data);
-        $response = $response;
+        return $response;
     }
 }

@@ -7,17 +7,18 @@
 <body style='background: #f2f2f2'>
     <div class="layui-fluid">
         <div class="layui-card">
-            <div class="layui-card-header layuiadmin-card-header-auto">
-                <h3>设定项
-                    </h1>
-            </div>
             <div class="layui-card-body">
                 <form class="layui-form" lay-filter="layuiadmin-app-form-list" id="layuiadmin-app-form-list" style="padding: 20px;">
                     <div class="layui-row">
                         <div class="layui-col-xs7">
-                            <table class="table">
+                            <table lay-skin="nob" class="layui-table">
                                 <tr>
-                                    <td>
+                                    <td colspan="2">
+                                        <h3>基础设定</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 257px;">
                                         <div class="layui-form-mid">建立合同的时候乙方默认名称</div>
                                     </td>
                                     <td>
@@ -100,8 +101,16 @@
                                         </div>
                                     </td>
                                 </tr>
+                            </table>
+
+                            <table lay-skin="nob" class="layui-table" class="table">
                                 <tr>
-                                    <td>
+                                    <td colspan="2">
+                                        <h3>高级设定</h3>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 257px;">
                                         <div class="layui-form-mid">微信公众号Appid</div>
                                     </td>
                                     <td>
@@ -119,6 +128,18 @@
                                         <div class="layui-input-inline">
                                             <input type="text" name="secret" value="{$lift_settings.secret}" required
                                                 lay-verify="required" placeholder="Secert" autocomplete="off" class="layui-input">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="layui-form-mid">调度服务器地址</div>
+                                    </td>
+                                    <td>
+                                        <div class="layui-input-inline">
+                                            <input type="text" name="runtimeServerUrl" value="{$lift_settings.runtimeServerUrl}"
+                                                required lay-verify="required" placeholder="调度服务器地址" autocomplete="off"
+                                                class="layui-input">
                                         </div>
                                     </td>
                                 </tr>

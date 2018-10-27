@@ -1,36 +1,49 @@
-<include file="public@header"/>
+<include file="public@header" />
 </head>
+
 <body>
-<div class="wrap">
-    <div class="row">
-        <div class="col-md-offset-3 col-md-6">
-            <div class="panel panel-default" style="margin-top: 10%">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{:lang('CACHE_CLEARED')}</h3>
-                </div>
-                <div class="panel-body">
-                    <div style="line-height: 60px;">
-                        {:lang('CACHE_CLEARED')}
+    <div class="wrap">
+        <div class="row">
+            <div class="col-md-offset-3 col-md-6">
+                <div class="panel panel-default" style="margin-top: 10%">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{:lang('CACHE_CLEARED')}</h3>
                     </div>
-                    <div>
-                        <a href="javascript:close_app();" class="btn btn-primary pull-right">{:lang('CLOSE')}</a>
-                        <div class="clearfix"></div>
+                    <div class="panel-body">
+                        <div style="line-height: 60px;">
+                            {:lang('CACHE_CLEARED')}
+                        </div>
+                        <div>
+                            <a href="javascript:close_app();" class="btn btn-primary pull-right">{:lang('CLOSE')}</a>
+                            <div class="clearfix"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script src="__STATIC__/js/admin.js"></script>
-<script>
-    var closeTimeout = setTimeout(function () {
-        parent.close_current_app();
-    }, 3000);
+    <script src="__STATIC__/js/admin.js"></script>
+    <script src="__TMPL__/public/assets/layui/layui.js"></script>
+    <script>
+        console.log(123);
+        layui.config({
+            base: '__TMPL__/public/assets/' //静态资源所在路径
+        }).extend({
+            index: 'lib/index' //主入口模块
+        }).use(['index', 'layer'], function () {
+            console.log(123);
+            var index = layui.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            console.log(index);
+            var closeTimeout = setTimeout(function () {
+                parent.close_current_app(index);
+            }, 3000);
 
-    function close_app() {
-        clearTimeout(closeTimeout);
-        parent.close_current_app();
-    }
-</script>
+            function close_app() {
+                clearTimeout(closeTimeout);
+                parent.close_current_app(index);
+            }
+        });
+    </script>
 </body>
+
 </html>
