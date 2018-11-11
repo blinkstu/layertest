@@ -1,217 +1,300 @@
 <!DOCTYPE html>
 
 <html>
-
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>控制面板</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="__TMPL__/public/assets/css/layui.css" media="all">
-    <link rel="stylesheet" href="__TMPL__/public/assets/style/admin.css" media="all">
-    <link rel="stylesheet" href="__STATIC__/js/noty.css">
-    <link rel="stylesheet" href="__STATIC__/js/themes/mint.css">
-    <script src='//cdn.bootcss.com/socket.io/1.3.7/socket.io.js'></script>
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <link
+      rel="stylesheet"
+      href="__TMPL__/public/assets/css/layui.css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      href="__TMPL__/public/assets/style/admin.css"
+      media="all"
+    />
+    <link rel="stylesheet" href="__STATIC__/js/noty.css" />
+    <link rel="stylesheet" href="__STATIC__/js/themes/mint.css" />
+    <script src="//cdn.bootcss.com/socket.io/1.3.7/socket.io.js"></script>
     <script>
-        //全局变量
-        var GV = {
-            HOST: "{$_SERVER['HTTP_HOST']}",
-            ROOT: "__ROOT__/",
-            WEB_ROOT: "__WEB_ROOT__/",
-            JS_ROOT: "static/js/"
-        };
+      //全局变量
+      var GV = {
+        HOST: "{$_SERVER['HTTP_HOST']}",
+        ROOT: "__ROOT__/",
+        WEB_ROOT: "__WEB_ROOT__/",
+        JS_ROOT: "static/js/"
+      };
     </script>
 
     <php>function getsubmenu($submenus){</php>
-    <foreach name='submenus' item='menu'>
-        <php>
-            $menu_name=lang($menu['lang']); $menu_name=$menu['lang']==$menu_name?$menu['name']:$menu_name;
-        </php>
-        <dd data-name="{$menu.id}">
-            <php>if(isset($menu['items'])){</php>
-            <a>{$menu_name}</a>
-            <dl class="layui-nav-child">
-                <php>getsubmenu($menu['items'])</php>
-            </dl>
-            <php>}else{</php>
-            <a lay-href="{$menu.url}">{$menu_name}</a>
-            <php>}</php>
-        </dd>
+    <foreach name="submenus" item="menu">
+      <php>
+        $menu_name=lang($menu['lang']);
+        $menu_name=$menu['lang']==$menu_name?$menu['name']:$menu_name;
+      </php>
+      <dd data-name="{$menu.id}">
+        <php>if(isset($menu['items'])){</php> <a>{$menu_name}</a>
+        <dl class="layui-nav-child"><php>getsubmenu($menu['items'])</php></dl>
+        <php>}else{</php> <a lay-href="{$menu.url}">{$menu_name}</a>
+        <php>}</php>
+      </dd>
     </foreach>
     <php>}</php>
-</head>
+  </head>
 
-<body class="layui-layout-body" layadmin-themealias="classic-black-header">
-
+  <body class="layui-layout-body" layadmin-themealias="classic-black-header">
     <div id="LAY_app">
-        <div class="layui-layout layui-layout-admin">
-            <div class="layui-header">
-                <!-- 头部区域 -->
-                <ul class="layui-nav layui-layout-left">
-                    <li class="layui-nav-item layadmin-flexible" lay-unselect>
-                        <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
-                            <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
-                        </a>
-                    </li>
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                        <a onclick="javascript:parent.openIframeLayer('/admin/Menu/index.html','菜单设置',{});" title="菜单设置">
-                            <i class="layui-icon layui-icon-website"></i>
-                        </a>
-                    </li>
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect>
-                        <a href="javascript:;" onclick="javascript:layer.open({type:2,title:'清理缓存',area:['500px','300px'],content:'/admin/Setting/clearcache.html'});"
-                            title="清理缓存">清理缓存
-                            <i class="layui-icon layui-icon-template-1"></i>
-                        </a>
-                    </li>
-                    <li class="layui-nav-item" lay-unselect>
-                        <a href="javascript:;" layadmin-event="refresh" title="刷新当前页面">
-                            刷新 <i class="layui-icon layui-icon-refresh-3"></i>
-                        </a>
-                    </li>
-                </ul>
-                <div class="connect-error layui-bg-red error-top" style="display:none;  width:200px;
+      <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+          <!-- 头部区域 -->
+          <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item layadmin-flexible" lay-unselect>
+              <a href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                <i
+                  class="layui-icon layui-icon-shrink-right"
+                  id="LAY_app_flexible"
+                ></i>
+              </a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs" lay-unselect>
+              <a
+                onclick="javascript:parent.openIframeLayer('/admin/Menu/index.html','菜单设置',{});"
+                title="菜单设置"
+              >
+                <i class="layui-icon layui-icon-website"></i>
+              </a>
+            </li>
+            <li class="layui-nav-item layui-hide-xs" lay-unselect>
+              <a
+                href="javascript:;"
+                onclick="javascript:layer.open({type:2,title:'清理缓存',area:['500px','300px'],content:'/admin/Setting/clearcache.html'});"
+                title="清理缓存"
+                >清理缓存 <i class="layui-icon layui-icon-template-1"></i>
+              </a>
+            </li>
+            <li class="layui-nav-item" lay-unselect>
+              <a
+                href="javascript:;"
+                layadmin-event="refresh"
+                title="刷新当前页面"
+              >
+                刷新 <i class="layui-icon layui-icon-refresh-3"></i>
+              </a>
+            </li>
+          </ul>
+          <div
+            class="connect-error layui-bg-red error-top"
+            style="display:none;  width:200px;
                 padding:10px;
                 margin:0 auto;
                 border-radius: 10px;
                 margin-top:5px;
-                box-shadow: 0 2px 5px 0 rgba(0,0,0,0.15);">
-                    <i class="layui-icon layui-icon-close"></i>
-                    调度服务链接错误，请检查脚本是否开启
-                </div>
-                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
+                box-shadow: 0 2px 5px 0 rgba(0,0,0,0.15);"
+          >
+            <i class="layui-icon layui-icon-close"></i>
+            调度服务链接错误，请检查脚本是否开启
+          </div>
+          <ul
+            class="layui-nav layui-layout-right"
+            lay-filter="layadmin-layout-right"
+          >
+            <li class="layui-nav-item" lay-unselect="">
+              <a
+                lay-href="/admin/noty"
+                layadmin-event="message"
+                id="noty-icon"
+                lay-text="消息中心"
+              >
+                <i class="layui-icon layui-icon-notice"></i>
 
-                    <li class="layui-nav-item" lay-unselect="">
-                        <a lay-href="/admin/noty" layadmin-event="message" id="noty-icon" lay-text="消息中心">
-                            <i class="layui-icon layui-icon-notice"></i>
-
-                            <!-- 如果有新消息，则显示小圆点 -->
-
-                        </a>
-                    </li>
-                    <!--li class="layui-nav-item layui-hide-xs" lay-unselect>
-                        <a href="javascript:;" layadmin-event="fullscreen">
-                            <i class="layui-icon layui-icon-screen-full"></i>
-                        </a>
-                    </li--->
-                    <li class="layui-nav-item" lay-unselect style="margin-right:15px">
-                        <a href="javascript:;">
-                            <cite>{:empty($admin['user_nickname'])? $admin['user_login'] : $admin['user_nickname']}</cite>
-                        </a>
-                        <dl class="layui-nav-child">
-                            <dd>
-                                <a lay-href="/admin/user/index.html">管理员资料</a>
-                            </dd>
-                            <hr>
-                            <dd layadmin-event="logout" style="text-align: center;">
-                                <a href="{:url('Public/logout')}">退出</a>
-                            </dd>
-                        </dl>
-                    </li>
-
-                </ul>
-            </div>
-
-            <!-- 侧边菜单 -->
-            <div class="layui-side layui-side-menu">
-                <if condition="cmf_auth_check(cmf_get_current_admin_id(),'user/AdminAsset/index')">
-                    <a class="btn btn-sm btn-info" href="javascript:openapp('{:url('user/AdminAsset/index')}','userAdminAssetindex','资源管理',true);"
-                        title="资源管理" data-toggle="tooltip">
-                        <i class="fa fa-file"></i>
-                    </a>
-                </if>
-
-                <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/Setting/clearcache')">
-                    <a class="btn btn-sm btn-danger" href="javascript:openapp('{:url('admin/Setting/clearcache')}','index_clearcache','{:lang('ADMIN_SETTING_CLEARCACHE')}',true);"
-                        title="{:lang('ADMIN_SETTING_CLEARCACHE')}" data-toggle="tooltip">
-                        <i class="fa fa-trash-o"></i>
-                    </a>
-                </if>
-
-                <if condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/RecycleBin/index')">
-                    <a class="btn btn-sm btn-danger" href="javascript:openapp('{:url('admin/RecycleBin/index')}','index_recycle','回收站',true);"
-                        title="回收站" data-toggle="tooltip">
-                        <i class="fa fa-recycle"></i>
-                    </a>
-                </if>
-
-                <if condition="APP_DEBUG">
-                    <a class="btn btn-sm btn-default" href="javascript:openapp('{:url('admin/Menu/index')}','index_menu','{:lang('ADMIN_MENU_INDEX')}',true);"
-                        title="{:lang('ADMIN_MENU_INDEX')}" data-toggle="tooltip">
-                        <i class="fa fa-list"></i>
-                    </a>
-                </if>
-                <div class="layui-side-scroll">
-                    <div class="layui-logo" lay-href="home/console.html">
-                        <span>控制台</span>
-                    </div>
-
-                    <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
-                        <foreach name='menus' item='menu'>
-                            <li data-name="{$menu['lang']}" class="layui-nav-item">
-                                <php>
-                                    $menu_name=lang($menu['lang']);
-                                    $menu_name=$menu['lang']==$menu_name?$menu['name']:$menu_name;
-                                </php>
-                                <a href="javascript:;" lay-tips="{$menu_name}" lay-direction="2">
-                                    <i class="layui-icon layui-icon-{$menu.icon|default='set'}"></i>
-                                    <cite>{$menu_name}</cite>
-                                    <span class="layui-nav-more"></span>
-                                </a>
-                                <php>if(isset($menu['items'])){</php>
-                                <dl class="layui-nav-child">
-                                    <php>getsubmenu($menu['items'])</php>
-                                </dl>
-                                <php>}</php>
-                            </li>
-                        </foreach>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- 页面标签 -->
-            <div class="layadmin-pagetabs" id="LAY_app_tabs">
-                <div class="layui-icon layadmin-tabs-control layui-icon-prev" layadmin-event="leftPage"></div>
-                <div class="layui-icon layadmin-tabs-control layui-icon-next" layadmin-event="rightPage"></div>
-                <div class="layui-icon layadmin-tabs-control layui-icon-down">
-                    <ul class="layui-nav layadmin-tabs-select" lay-filter="layadmin-pagetabs-nav">
-                        <li class="layui-nav-item" lay-unselect>
-                            <a href="javascript:;"></a>
-                            <dl class="layui-nav-child layui-anim-fadein">
-                                <dd layadmin-event="closeThisTabs">
-                                    <a href="javascript:;">关闭当前标签页</a>
-                                </dd>
-                                <dd layadmin-event="closeOtherTabs">
-                                    <a href="javascript:;">关闭其它标签页</a>
-                                </dd>
-                                <dd layadmin-event="closeAllTabs">
-                                    <a href="javascript:;">关闭全部标签页</a>
-                                </dd>
-                            </dl>
-                        </li>
-                    </ul>
-                </div>
-                <div class="layui-tab" lay-unauto lay-allowClose="true" lay-filter="layadmin-layout-tabs">
-                    <ul class="layui-tab-title" id="LAY_app_tabsheader">
-                        <li lay-id="{:url('Main/index')}" lay-attr="{:url('Main/index')}" class="layui-this">
-                            <i class="layui-icon layui-icon-home"></i>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-
-            <!-- 主体内容 -->
-            <div class="layui-body" id="LAY_app_body">
-                <div class="layadmin-tabsbody-item layui-show">
-                    <iframe src="{:url('Main/index')}" frameborder="0" class="layadmin-iframe"></iframe>
-                </div>
-            </div>
-
-            <!-- 辅助元素，一般用于移动设备下遮罩 -->
-            <div class="layadmin-body-shade" layadmin-event="shade"></div>
+                <!-- 如果有新消息，则显示小圆点 -->
+              </a>
+            </li>
+            <!--
+              li class="layui-nav-item layui-hide-xs" lay-unselect>
+                  <a href="javascript:;" layadmin-event="fullscreen">
+                      <i class="layui-icon layui-icon-screen-full"></i>
+                  </a>
+              </li-
+            -->
+            <li class="layui-nav-item" lay-unselect style="margin-right:15px">
+              <a href="javascript:;">
+                <cite
+                  >{:empty($admin['user_nickname'])? $admin['user_login'] :
+                  $admin['user_nickname']}</cite
+                >
+              </a>
+              <dl class="layui-nav-child">
+                <dd><a lay-href="/admin/user/index.html">管理员资料</a></dd>
+                <hr />
+                <dd layadmin-event="logout" style="text-align: center;">
+                  <a href="{:url('Public/logout')}">退出</a>
+                </dd>
+              </dl>
+            </li>
+          </ul>
         </div>
+
+        <!-- 侧边菜单 -->
+        <div class="layui-side layui-side-menu">
+          <if
+            condition="cmf_auth_check(cmf_get_current_admin_id(),'user/AdminAsset/index')"
+          >
+            <a
+              class="btn btn-sm btn-info"
+              href="javascript:openapp('{:url('user/AdminAsset/index')}','userAdminAssetindex','资源管理',true);"
+              title="资源管理"
+              data-toggle="tooltip"
+            >
+              <i class="fa fa-file"></i>
+            </a>
+          </if>
+
+          <if
+            condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/Setting/clearcache')"
+          >
+            <a
+              class="btn btn-sm btn-danger"
+              href="javascript:openapp('{:url('admin/Setting/clearcache')}','index_clearcache','{:lang('ADMIN_SETTING_CLEARCACHE')}',true);"
+              title="{:lang('ADMIN_SETTING_CLEARCACHE')}"
+              data-toggle="tooltip"
+            >
+              <i class="fa fa-trash-o"></i>
+            </a>
+          </if>
+
+          <if
+            condition="cmf_auth_check(cmf_get_current_admin_id(),'admin/RecycleBin/index')"
+          >
+            <a
+              class="btn btn-sm btn-danger"
+              href="javascript:openapp('{:url('admin/RecycleBin/index')}','index_recycle','回收站',true);"
+              title="回收站"
+              data-toggle="tooltip"
+            >
+              <i class="fa fa-recycle"></i>
+            </a>
+          </if>
+
+          <if condition="APP_DEBUG">
+            <a
+              class="btn btn-sm btn-default"
+              href="javascript:openapp('{:url('admin/Menu/index')}','index_menu','{:lang('ADMIN_MENU_INDEX')}',true);"
+              title="{:lang('ADMIN_MENU_INDEX')}"
+              data-toggle="tooltip"
+            >
+              <i class="fa fa-list"></i>
+            </a>
+          </if>
+          <div class="layui-side-scroll">
+            <div class="layui-logo" lay-href="home/console.html">
+              <span>控制台</span>
+            </div>
+
+            <ul
+              class="layui-nav layui-nav-tree"
+              lay-shrink="all"
+              id="LAY-system-side-menu"
+              lay-filter="layadmin-system-side-menu"
+            >
+              <foreach name="menus" item="menu">
+                <li data-name="{$menu['lang']}" class="layui-nav-item">
+                  <php>
+                    $menu_name=lang($menu['lang']);
+                    $menu_name=$menu['lang']==$menu_name?$menu['name']:$menu_name;
+                  </php>
+                  <a
+                    href="javascript:;"
+                    lay-tips="{$menu_name}"
+                    lay-direction="2"
+                  >
+                    <i
+                      class="layui-icon layui-icon-{$menu.icon|default='set'}"
+                    ></i>
+                    <cite>{$menu_name}</cite>
+                    <span class="layui-nav-more"></span>
+                  </a>
+                  <php>if(isset($menu['items'])){</php>
+                  <dl class="layui-nav-child">
+                    <php>getsubmenu($menu['items'])</php>
+                  </dl>
+                  <php>}</php>
+                </li>
+              </foreach>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 页面标签 -->
+        <div class="layadmin-pagetabs" id="LAY_app_tabs">
+          <div
+            class="layui-icon layadmin-tabs-control layui-icon-prev"
+            layadmin-event="leftPage"
+          ></div>
+          <div
+            class="layui-icon layadmin-tabs-control layui-icon-next"
+            layadmin-event="rightPage"
+          ></div>
+          <div class="layui-icon layadmin-tabs-control layui-icon-down">
+            <ul
+              class="layui-nav layadmin-tabs-select"
+              lay-filter="layadmin-pagetabs-nav"
+            >
+              <li class="layui-nav-item" lay-unselect>
+                <a href="javascript:;"></a>
+                <dl class="layui-nav-child layui-anim-fadein">
+                  <dd layadmin-event="closeThisTabs">
+                    <a href="javascript:;">关闭当前标签页</a>
+                  </dd>
+                  <dd layadmin-event="closeOtherTabs">
+                    <a href="javascript:;">关闭其它标签页</a>
+                  </dd>
+                  <dd layadmin-event="closeAllTabs">
+                    <a href="javascript:;">关闭全部标签页</a>
+                  </dd>
+                </dl>
+              </li>
+            </ul>
+          </div>
+          <div
+            class="layui-tab"
+            lay-unauto
+            lay-allowClose="true"
+            lay-filter="layadmin-layout-tabs"
+          >
+            <ul class="layui-tab-title" id="LAY_app_tabsheader">
+              <li
+                lay-id="{:url('Main/index')}"
+                lay-attr="{:url('Main/index')}"
+                class="layui-this"
+              >
+                <i class="layui-icon layui-icon-home"></i>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 主体内容 -->
+        <div class="layui-body" id="LAY_app_body">
+          <div class="layadmin-tabsbody-item layui-show">
+            <iframe
+              src="{:url('Main/index')}"
+              frameborder="0"
+              class="layadmin-iframe"
+            ></iframe>
+          </div>
+        </div>
+
+        <!-- 辅助元素，一般用于移动设备下遮罩 -->
+        <div class="layadmin-body-shade" layadmin-event="shade"></div>
+      </div>
     </div>
     <script src="__TMPL__/public/assets/js/jquery-1.10.2.min.js"></script>
     <script src="__TMPL__/public/assets/js/jnoty.js"></script>
@@ -222,56 +305,67 @@
     <script src="__STATIC__/js/admin.js"></script>
     <script src="__STATIC__/js/string.js"></script>
     <script>
-        layui.config({
-            base: '__TMPL__/public/assets/' //静态资源所在路径
-        }).extend({
-            index: 'lib/index' //主入口模块
-        }).use(['index', 'layer'], function () {
+      layui
+        .config({
+          base: "__TMPL__/public/assets/" //静态资源所在路径
+        })
+        .extend({
+          index: "lib/index" //主入口模块
+        })
+        .use(["index", "layer"], function() {});
 
-        });
-
-        function sendMsg(data) {
-            data = JSON.parse(data);
-            if ($('#noty-dot').length <= 0) {
-                $('#noty-icon').append('<span id="noty-dot" class="layui-badge-dot"></span>');
-            }
-            doShow(data);
+      function sendMsg(data) {
+        data = JSON.parse(data);
+        if ($("#noty-dot").length <= 0) {
+          $("#noty-icon").append(
+            '<span id="noty-dot" class="layui-badge-dot"></span>'
+          );
         }
+        doShow(data);
+      }
 
-        function doShow(data) {
-            var n = new Noty({
-                theme: 'mint',
-                type: 'info',
-                layout: 'topRight',
-                text: data.msg,
-                buttons: [
-                    Noty.button('查看', 'layui-btn layui-btn-normal layui-btn-sm', function () {
-                        layui.index.openTabsPage('/admin/noty', '消息中心');
-                        n.close();
-                    })
-                ]
-            }).show();
-        }
+      function doShow(data) {
+        var n = new Noty({
+          theme: "mint",
+          type: "info",
+          layout: "topRight",
+          text: data.msg,
+          buttons: [
+            Noty.button(
+              "查看",
+              "layui-btn layui-btn-normal layui-btn-sm",
+              function() {
+                layui.index.openTabsPage("/admin/noty", "消息中心");
+                n.close();
+              }
+            )
+          ]
+        }).show();
+      }
 
-        function test() {
-            layui.index.openTabsPage('new', '消息中心');
-        }
+      function test() {
+        layui.index.openTabsPage("new", "消息中心");
+      }
 
-        function good(fid, index) {
-            iframe = $("iframe[__idm_frm__^='" + fid + "']")[0];
-            iframe.contentWindow.layui.table.reload('LAY-app-content-list');
-            layer.close(index);
-        }
+      function good(fid, index) {
+        iframe = $("iframe[__idm_frm__^='" + fid + "']")[0];
+        iframe.contentWindow.layui.table.reload("LAY-app-content-list");
+        layer.closeAll();
+      }
 
-        // 初始化io对象
-        var socket = io(socket_uri);
-        socket.on('connect', function () { socket.emit('login', 1); console.log('connected'); $('.connect-error').hide('fast'); });
-        socket.on('new_msg', function (msg) { sendMsg(msg); });
-        socket.on('connect_error', (error) => {
-            $('.connect-error').show('fast');
-        });
-
+      // 初始化io对象
+      var socket = io(socket_uri);
+      socket.on("connect", function() {
+        socket.emit("login", 1);
+        console.log("connected");
+        $(".connect-error").hide("fast");
+      });
+      socket.on("new_msg", function(msg) {
+        sendMsg(msg);
+      });
+      socket.on("connect_error", error => {
+        $(".connect-error").show("fast");
+      });
     </script>
-</body>
-
+  </body>
 </html>
