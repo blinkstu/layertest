@@ -350,7 +350,11 @@
       function good(fid, index) {
         iframe = $("iframe[__idm_frm__^='" + fid + "']")[0];
         iframe.contentWindow.layui.table.reload("LAY-app-content-list");
-        layer.closeAll();
+        if (typeof index == "undefined") {
+          layer.closeAll();
+        } else {
+          layer.close(index);
+        }
       }
 
       // 初始化io对象
